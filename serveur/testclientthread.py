@@ -10,9 +10,5 @@ while file_name != "exit":
 	s.send(file_name.encode())
 	file_name = "recu.py"
 	r = s.recv(1024)
-	with open(file_name,'wb') as _file:
-		_file.write(r)
-	print ('Le fichier a été correctement copié dans ', file_name)
-	file_name = "exit"
-	s.send(file_name.encode())
+	print(r.decode())
 s.close()
