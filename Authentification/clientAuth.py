@@ -22,7 +22,7 @@ def lecture_fichier(fichier) :
 		l[i] = l[i].split(':')
 	return l
 
-
+#test merge
 
 
 def SIGNUP():
