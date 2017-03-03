@@ -3,25 +3,68 @@
 import os
 from getpass import getpass
 
+
 mdpMed="azerty"
 Med="medecin"
 
 cleMed="bouteille"
+cleInf="livre"
+cleInt="portable"
+
+
+def lecture_fichier(fichier) :
+	f = open(fichier,'r')
+	fo = f.read(1024)
+	#fo = fo.rstrip()			#enleve les \n
+	l = fo.split(';') 
+	print l
+	for i in range(len(l)) :
+		l[i] = l[i].split(':')
+	return l
+
+
 
 
 def SIGNUP():
 
-	user=input("Utilisateur")
-	saisie=input("Cle Medecin:")
-	if saisie == cleMed:
-		mdp = getpass("Mot de passe:")
-		f = open('passwordMed.txt','a')
-		f.write(user+":"+mdp+"\n")
+	user=raw_input("Utilisateur : ")
+
+	service = raw_input("Sous quel service voulez vous vous enregistrer ? ")
+
+	if service == 'medecin' :
+
+		saisie=raw_input("Cle Medecin : ")
+		if saisie == cleMed:
+			mdp = getpass("Mot de passe :")
+			f = open('passwordMed.txt','a')
+			f.write(user+":"+mdp+";")
 		
-		
-	else:
-		print ("Cle errone, inscription impossible")
+		else:
+			print ("Cle errone, inscription impossible")
 	
+	elif service == 'infirmier' :
+		saisie=raw_input("Cle Infirmier : ")
+		if saisie == cleMed:
+			mdp = getpass("Mot de passe :")
+			f = open('passwordInf.txt','a')
+			f.write(user+":"+mdp+";")
+		
+		else:
+			print ("Cle errone, inscription impossible")
+
+	elif service == 'interne' :
+		saisie=raw_input("Cle Interne : ")
+		if saisie == cleMed:
+			mdp = getpass("Mot de passe :")
+			f = open('passwordInt.txt','a')
+			f.write(user+":"+mdp+";")
+		
+		else:
+			print ("Cle errone, inscription impossible")
+
+	else :
+		print ("Ce service n'existe pas.")
+
 
 
 def LOGIN():
