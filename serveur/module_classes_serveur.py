@@ -17,20 +17,3 @@ class ClientThread(threading.Thread):
 		print('Connection de ',self.ip,': ',self.port)
 		
 		r = self.clientsocket.recv(2048)
-		r = r.decode('UTF-8')
-		print('Ouverture du fichier: ',r, '...')
-		fp = open(r, 'rb')
-		self.clientsocket.send(fp.read())
-		
-		print ('Client déconnecté...')
-
-tcpsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcpsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-tcpsock.bind(("127.0.0.1",6364))
-
-while True:
-	tcpsock.listen(10)
-	print('En écoute...')
-	(clientsocket, (ip,port)) = tcpsock.accept()
-	newthread = ClientThread(ip, port, clientsocket)
-	newthread.start()
