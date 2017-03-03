@@ -64,55 +64,58 @@ def SIGNUP():
 
 
 def LOGIN():
+	tout = True
 	session = True
 	service = True
 	verrouille = True
 	time=4
 	
-	while service:
-	
-		service=input("Service (Medecin, Infirmier, Interne):")
-		if service == "Medecin":
-			l=lecture_fichier("passwordMed.txt")
-			service = False
-		elif service == "Infirmier":
-			l=lecture_fichier("passwordInf.txt")
-			service = False
-		elif service == "Interne":
-			l=lecture_fichier("passwordInt.txt")
-			service = False
-		else:
-			print("Ce service n'existe pas")
-			
-	while session:
-		
-		user= input("Utilisateur:")
-		for i in range(len(l)):
-			for j in range(len(l[i])):
-				if user == l[i][0]:
-					print ("Utilisateur reconnu")
-					session = False
-		if session == True:	
-			print("Utilisateur inconnue")		
 
-	while verrouille:
-		time-=1
-		print("Reste",time,"essai")
+	while tout :
+		while service:
 		
-		if time ==0:
-			print("Plus d'essai disponible")
-			break
-		else:
-			saisie = getpass("Mot de passe:")
+			service=input("Service (Medecin, Infirmier, Interne):")
+			if service == "Medecin":
+				l=lecture_fichier("passwordMed.txt")
+				service = False
+			elif service == "Infirmier":
+				l=lecture_fichier("passwordInf.txt")
+				service = False
+			elif service == "Interne":
+				l=lecture_fichier("passwordInt.txt")
+				service = False
+			else:
+				print("Ce service n'existe pas")
 			
-		for i in range(len(l)):
-			for j in range(len(l[i])):
-				if user == l[i][0]:
-					if saisie== l[i][1]:
-						verrouille=False
-						print("Session ouverte")
-					else:
-						print("Mot de passe incorrect")
+		while session:
+		
+			user= input("Utilisateur:")
+			for i in range(len(l)):
+				for j in range(len(l[i])):
+					if user == l[i][0]:
+						print ("Utilisateur reconnu")
+						session = False
+			if session == True:	
+				print("Utilisateur inconnue")		
+	
+		while verrouille:
+			time-=1
+			print("Reste",time,"essai")
+			
+			if time ==0:
+				print("Plus d'essai disponible")
+				break
+			else:
+				saisie = getpass("Mot de passe:")
+			
+			for i in range(len(l)):
+				for j in range(len(l[i])):
+					if user == l[i][0]:
+						if saisie== l[i][1]:
+							verrouille=False
+							print("Session ouverte")
+						else:
+							print("Mot de passe incorrect")
 						
 	
 	
