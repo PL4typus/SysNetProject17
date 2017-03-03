@@ -15,15 +15,10 @@ cleInt="portable"
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
-	#fo = fo.rstrip()			#enleve les \n
 	l = fo.split(';') 
-	print l
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
 	return l
-
-#test merge
-
 
 def SIGNUP():
 
@@ -69,28 +64,37 @@ def SIGNUP():
 
 def LOGIN():
 	session = True
+	service = True
 	verrouille = True
 	time=4
 	
-	service=input("Service (Medecin, Infirmier, Interne):")
 	
-	while session:
 	
-		user= input("Utilisateur:")
-
+	while service:
+	
+		service=input("Service (Medecin, Infirmier, Interne):")
 		if service == "Medecin":
-			f=open('passwordMed.txt','a')
-		elif service == "Infirmier"
-			f=open('passwordInf.txt','a')
-		elif service == "Interne"
-			f=open('passwordInt.txt','a')
-
-		
-			session = False
+			l=lecture_fichier("passwordMed.txt")
+			service = False
+		elif service == "Infirmier":
+			l=lecture_fichier("passwordInf.txt")
+			service = False
+		elif service == "Interne":
+			l=lecture_fichier("passwordInt.txt")
+			service = False
 		else:
-
-			print("Utilisateur inconnue")
+			print("Ce service n'existe pas")
+			
+	while session:
 		
+		user= input("Utilisateur:")
+		for i in range(len(l)):
+			for j in range(len(l[i])):
+				if user == l[i][0]:
+					print ("Utilisateur reconnu")
+					session = False
+		if session == True:	
+			print("Utilisateur inconnue")		
 
 	while verrouille:
 		time-=1
@@ -109,5 +113,5 @@ def LOGIN():
 	
 	
 
-SIGNUP()
+#SIGNUP()
 LOGIN()
