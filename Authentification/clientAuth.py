@@ -15,6 +15,7 @@ cleInt="portable"
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
+	fo=fo.rstrip()
 	l = fo.split(';') 
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
@@ -22,13 +23,13 @@ def lecture_fichier(fichier) :
 
 def SIGNUP():
 
-	user=raw_input("Utilisateur : ")
+	user=input("Utilisateur : ")
 
-	service = raw_input("Sous quel service voulez vous vous enregistrer ? ")
+	service = input("Sous quel service voulez vous vous enregistrer (Medecin, Infirmier, Interne)? ")
 
-	if service == 'medecin' :
+	if service == 'Medecin' :
 
-		saisie=raw_input("Cle Medecin : ")
+		saisie=input("Cle Medecin : ")
 		if saisie == cleMed:
 			mdp = getpass("Mot de passe :")
 			f = open('passwordMed.txt','a')
@@ -37,8 +38,8 @@ def SIGNUP():
 		else:
 			print ("Cle errone, inscription impossible")
 	
-	elif service == 'infirmier' :
-		saisie=raw_input("Cle Infirmier : ")
+	elif service == 'Infirmier' :
+		saisie=input("Cle Infirmier : ")
 		if saisie == cleMed:
 			mdp = getpass("Mot de passe :")
 			f = open('passwordInf.txt','a')
@@ -47,8 +48,8 @@ def SIGNUP():
 		else:
 			print ("Cle errone, inscription impossible")
 
-	elif service == 'interne' :
-		saisie=raw_input("Cle Interne : ")
+	elif service == 'Interne' :
+		saisie=input("Cle Interne : ")
 		if saisie == cleMed:
 			mdp = getpass("Mot de passe :")
 			f = open('passwordInt.txt','a')
@@ -67,8 +68,6 @@ def LOGIN():
 	service = True
 	verrouille = True
 	time=4
-	
-	
 	
 	while service:
 	
@@ -105,13 +104,18 @@ def LOGIN():
 			break
 		else:
 			saisie = getpass("Mot de passe:")
-			if saisie == mdpMed:
-				verrouille=False
-				print("Session ouverte")
-			else:
-				print("Mot de passe incorrect")
+			
+		for i in range(len(l)):
+			for j in range(len(l[i])):
+				if user == l[i][0]:
+					if saisie== l[i][1]:
+						verrouille=False
+						print("Session ouverte")
+					else:
+						print("Mot de passe incorrect")
+						
 	
 	
 
-#SIGNUP()
+SIGNUP()
 LOGIN()
