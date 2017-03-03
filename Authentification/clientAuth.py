@@ -72,8 +72,10 @@ def LOGIN():
 	
 
 	while tout :
+		print("tout")
+		user = ''
 		while service:
-		
+			print ("service")
 			service=input("Service (Medecin, Infirmier, Interne):")
 			if service == "Medecin":
 				l=lecture_fichier("passwordMed.txt")
@@ -87,18 +89,25 @@ def LOGIN():
 			else:
 				print("Ce service n'existe pas")
 			
-		while session:
-		
+		while session and user != 'retour':
+			print("session")
 			user= input("Utilisateur:")
-			for i in range(len(l)):
-				for j in range(len(l[i])):
-					if user == l[i][0]:
-						print ("Utilisateur reconnu")
-						session = False
-			if session == True:	
-				print("Utilisateur inconnue")		
+			if user == 'retour' :
+				service = True
+				break
+			else :
+		
+				for i in range(len(l)):
+					for j in range(len(l[i])):
+						if user == l[i][0]:
+							print ("Utilisateur reconnu")
+							session = False
+							tout = False
+				if session == True:	
+					print("Utilisateur inconnu")		
 	
-		while verrouille:
+		while verrouille and tout == False :
+			print("verou")
 			time-=1
 			print("Reste",time,"essai")
 			
@@ -120,5 +129,5 @@ def LOGIN():
 	
 	
 
-SIGNUP()
+#SIGNUP()
 LOGIN()
