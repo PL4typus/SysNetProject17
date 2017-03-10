@@ -1,9 +1,8 @@
-
 #!/usr/bin/python
 #Client authentification
 import os
 from getpass import getpass
-
+#coding: utf8
 
 mdpMed="azerty"
 Med="medecin"
@@ -12,7 +11,14 @@ cleMed="bouteille"
 cleInf="livre"
 cleInt="portable"
 
-
+def lecture_fichier(fichier) :
+	f = open(fichier,'r')
+	fo = f.read(1024)
+	fo=fo.rstrip()
+	l = fo.split(';') 
+	for i in range(len(l)) :
+		l[i] = l[i].split(':')
+	return l
 
 def LOGIN():
 	tout = True
@@ -27,7 +33,7 @@ def LOGIN():
 		user = ''
 		while service:
 			print ("service")
-			service=input("Service (Medecin, Infirmier, Interne):")
+			service=conn.recv(10)
 			if service == "Medecin":
 				l=lecture_fichier("passwordMed.txt")
 				service = False
@@ -42,7 +48,7 @@ def LOGIN():
 			
 		while session and user != 'retour':
 			print("session")
-			user= input("Utilisateur:")
+			user= conn.recv(20)
 			if user == 'retour' :
 				service = True
 				break
@@ -66,7 +72,7 @@ def LOGIN():
 				print("Plus d'essai disponible")
 				break
 			else:
-				saisie = getpass("Mot de passe:")
+				saisie = conn.recv(30)
 			
 			for i in range(len(l)):
 				for j in range(len(l[i])):
@@ -77,6 +83,6 @@ def LOGIN():
 						else:
 							print("Mot de passe incorrect")
 
-
+LOGIN()
 
 
