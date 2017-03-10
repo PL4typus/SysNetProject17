@@ -28,9 +28,6 @@ def lecture_fichier(fichier) :
 
 
 
-motdepasse = input("Votre mot de passe : ")
-hash_mdp = hashlib.sha256(motdepasse.encode()).hexdigest()
-print(hash_mdp)
 
 def SIGNUP():
 
