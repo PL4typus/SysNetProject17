@@ -48,7 +48,7 @@ while 1 :
     age=input("Saisir l'age: ")
     s.send(age.encode())
     aller=input("Saisir ses allergies: ")
-    s.send(aller.encode())
+    s.send(aller.encode()+" ")
     symp=input("Saisir ses symptomes: ")
     s.send(symp.encode())
     diag=input("Saisie du diagnostique: ")
@@ -58,10 +58,11 @@ while 1 :
     hop=input("Saisie de la date d'entrée à l'hôpitale: ")
     s.send(hop.encode())
     print("Fin de la saisie")
+
   elif l[0] == "1" :
     break
-
-  s.send(cmd.encode())
-  rep=s.recv(BUFFER_SIZE)
-  print (rep.decode())
+  else :
+    s.send(cmd.encode())
+    rep=s.recv(BUFFER_SIZE)
+    print (rep.decode())
 
