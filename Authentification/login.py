@@ -1,10 +1,10 @@
-
 #!/usr/bin/python
 #Client authentification
 #coding: utf8
 import os
 from getpass import getpass
 import hashlib
+
 
 
 mdpMed="azerty"
@@ -14,7 +14,14 @@ cleMed="bouteille"
 cleInf="livre"
 cleInt="portable"
 
-
+def lecture_fichier(fichier) :
+	f = open(fichier,'r')
+	fo = f.read(1024)
+	fo=fo.rstrip()
+	l = fo.split(';') 
+	for i in range(len(l)) :
+		l[i] = l[i].split(':')
+	return l
 
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
@@ -39,7 +46,7 @@ def LOGIN():
 		user = ''
 		while service:
 			print ("service")
-			service=input("Service (Medecin, Infirmier, Interne):")
+			service=conn.recv(10)
 			if service == "Medecin":
 				l=lecture_fichier("passwordMed.txt")
 				service = False
@@ -53,7 +60,10 @@ def LOGIN():
 				print("Ce service n'existe pas")
 			
 		while session and user != 'retour':
-			user= input("Utilisateur:")
+
+			print("session")
+			user= conn.recv(20)
+
 			if user == 'retour' :
 				service = True
 				break
@@ -76,8 +86,9 @@ def LOGIN():
 				print("Plus d'essai disponible")
 				break
 			else:
-				saisie = getpass("Mot de passe:")
+				saisie = conn.recv(30)
 				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
+
 			
 			for i in range(len(l)):
 				for j in range(len(l[i])):
