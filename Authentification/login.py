@@ -4,6 +4,7 @@
 #coding: utf8
 import os
 from getpass import getpass
+import hashlib
 
 
 mdpMed="azerty"
@@ -12,6 +13,17 @@ Med="medecin"
 cleMed="bouteille"
 cleInf="livre"
 cleInt="portable"
+
+
+
+def lecture_fichier(fichier) :
+	f = open(fichier,'r')
+	fo = f.read(1024)
+	fo=fo.rstrip()
+	l = fo.split(';') 
+	for i in range(len(l)) :
+		l[i] = l[i].split(':')
+	return l
 
 
 
@@ -68,16 +80,17 @@ def LOGIN():
 				break
 			else:
 				saisie = getpass("Mot de passe:")
+				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
 			
 			for i in range(len(l)):
 				for j in range(len(l[i])):
 					if user == l[i][0]:
-						if saisie== l[i][1]:
+						if hash_mdp == l[i][1]:
 							verrouille=False
 							print("Session ouverte")
 						else:
 							print("Mot de passe incorrect")
 
-
+LOGIN()
 
 
