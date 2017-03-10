@@ -1,8 +1,11 @@
 #!/usr/bin/python
 #Client authentification
+#coding: utf8
 import os
 from getpass import getpass
-#coding: utf8
+import hashlib
+
+
 
 mdpMed="azerty"
 Med="medecin"
@@ -20,6 +23,17 @@ def lecture_fichier(fichier) :
 		l[i] = l[i].split(':')
 	return l
 
+def lecture_fichier(fichier) :
+	f = open(fichier,'r')
+	fo = f.read(1024)
+	fo=fo.rstrip()
+	l = fo.split(';') 
+	for i in range(len(l)) :
+		l[i] = l[i].split(':')
+	return l
+
+
+
 def LOGIN():
 	tout = True
 	session = True
@@ -29,7 +43,6 @@ def LOGIN():
 	
 
 	while tout :
-		print("tout")
 		user = ''
 		while service:
 			print ("service")
@@ -47,8 +60,10 @@ def LOGIN():
 				print("Ce service n'existe pas")
 			
 		while session and user != 'retour':
+
 			print("session")
 			user= conn.recv(20)
+
 			if user == 'retour' :
 				service = True
 				break
@@ -64,7 +79,6 @@ def LOGIN():
 					print("Utilisateur inconnu")		
 	
 		while verrouille and tout == False :
-			print("verou")
 			time-=1
 			print("Reste",time,"essai")
 			
@@ -73,11 +87,13 @@ def LOGIN():
 				break
 			else:
 				saisie = conn.recv(30)
+				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
+
 			
 			for i in range(len(l)):
 				for j in range(len(l[i])):
 					if user == l[i][0]:
-						if saisie== l[i][1]:
+						if hash_mdp == l[i][1]:
 							verrouille=False
 							print("Session ouverte")
 						else:

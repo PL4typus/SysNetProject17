@@ -18,16 +18,16 @@ s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 s.connect((TCP_IP,TCP_PORT))
 
-d=raw_input("Etes vous medecin ou infirmiere (m/i) : ")
+d=input("Etes vous medecin ou infirmiere (m/i) : ")
 
-s.send(d)
+s.send(d.encode())
 
 while 1 :
-  cmd=raw_input("Saisir la commande ")
+  cmd=input("Saisir la commande ")
   if cmd == "1" :
     break
 
-  s.send(cmd)
+  s.send(cmd.encode())
   rep=s.recv(BUFFER_SIZE)
-  print rep
+  print (rep.decode())
 
