@@ -1,4 +1,4 @@
-#!/usr/bin/python3.4
+#!/usr/bin/env/python3.4
 #-*- coding: utf-8 -*-
 
 from module_thread import *
@@ -13,7 +13,7 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 s.bind((TCP_IP,TCP_PORT))
 
 def barman(conn,ip,port):
-	print("child process PID = "+os.getpid()+" is client with "+ip+" : "+port)
+	print("child process PID = ",os.getpid()," is client with ",ip," : ",port)
 	data = conn.recv(BUFFER_SIZE)
 	droit = data.decode()
 	while True:
@@ -36,7 +36,7 @@ while True:
 	(conn, (ip,port)) = s.accept()
 	child_pid=os.fork()
 	if child_pid == 0:#si pid = 0 ça veut dire qu'on est dans le child process
-		print("\nConnection avec client sur "+ port)
+
 		barman(conn,ip,port )
 	
 
