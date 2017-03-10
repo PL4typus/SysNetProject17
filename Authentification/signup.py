@@ -1,11 +1,15 @@
 #!/usr/bin/python
 #Client authentification
+#coding: utf8
+
 import os
 from getpass import getpass
+import hashlib
+
 
 
 mdpMed="azerty"
-Med="medecin"
+Med="médecin"
 
 cleMed="bouteille"
 cleInf="livre"
@@ -22,6 +26,12 @@ def lecture_fichier(fichier) :
 		l[i] = l[i].split(':')
 	return l
 
+
+
+motdepasse = input("Votre mot de passe : ")
+hash_mdp = hashlib.sha256(motdepasse.encode()).hexdigest()
+print(hash_mdp)
+
 def SIGNUP():
 
 	user=input("Utilisateur : ")
@@ -33,8 +43,9 @@ def SIGNUP():
 		saisie=input("Cle Medecin : ")
 		if saisie == cleMed:
 			mdp = getpass("Mot de passe :")
+			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
 			f = open('passwordMed.txt','a')
-			f.write(user+":"+mdp+";")
+			f.write(user+":"+hash_mdp+";")
 		
 		else:
 			print ("Cle errone, inscription impossible")
@@ -43,9 +54,9 @@ def SIGNUP():
 		saisie=input("Cle Infirmier : ")
 		if saisie == cleMed:
 			mdp = getpass("Mot de passe :")
+			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
 			f = open('passwordInf.txt','a')
-			f.write(user+":"+m
-dp+";")
+			f.write(user+":"+hash_mdp+";")
 		
 		else:
 			print ("Cle errone, inscription impossible")
@@ -54,11 +65,19 @@ dp+";")
 		saisie=input("Cle Interne : ")
 		if saisie == cleMed:
 			mdp = getpass("Mot de passe :")
+			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
 			f = open('passwordInt.txt','a')
-			f.write(user+":"+mdp+";")
+			f.write(user+":"+hash_mdp+";")
 		
 		else:
 			print ("Cle errone, inscription impossible")
 
 	else :
 		print ("Ce service n'existe pas.")
+
+
+SIGNUP()
+
+
+
+

@@ -1,6 +1,7 @@
 
 #!/usr/bin/python
 #Client authentification
+#coding: utf8
 import os
 from getpass import getpass
 
