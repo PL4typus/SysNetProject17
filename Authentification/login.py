@@ -36,7 +36,6 @@ def LOGIN():
 	
 
 	while tout :
-		print("tout")
 		user = ''
 		while service:
 			print ("service")
@@ -54,7 +53,6 @@ def LOGIN():
 				print("Ce service n'existe pas")
 			
 		while session and user != 'retour':
-			print("session")
 			user= input("Utilisateur:")
 			if user == 'retour' :
 				service = True
@@ -71,7 +69,6 @@ def LOGIN():
 					print("Utilisateur inconnu")		
 	
 		while verrouille and tout == False :
-			print("verou")
 			time-=1
 			print("Reste",time,"essai")
 			
