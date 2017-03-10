@@ -14,21 +14,12 @@ s.bind((TCP_IP,TCP_PORT))
 while True:
 	s.listen(5)
 	print('En écoute sur ', TCP_PORT,'...')
-	(clientsocket, (ip,port)) = s.accept()
-	newthread = ClientThread(ip, port, clientsocket)
+	(conn, (ip,port)) = s.accept()
+	newthread = ClientThread(ip, port, conn)
 	newthread.start()
-
-
-	
-	
-		
-	
 	
 
-
-
-
-conn.close()
+s.close()
 
 
 
