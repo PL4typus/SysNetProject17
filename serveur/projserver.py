@@ -28,7 +28,7 @@ while True:
 
 
 
-conn.close()
+s.close()
 
 
 
