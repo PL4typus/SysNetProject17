@@ -29,27 +29,32 @@ class ClientThread(threading.Thread):
 
 #----------------------------------------------
   			if l[0]== "edit":
-  				r = os.popen("cd user/;cat "+l[1])
-  				self.conn.send((r.read()).encode())
-  				num = self.conn.recv(self.BUFFER_SIZE)
-  				num = num.decode()
-  				edit = self.conn.recv(self.BUFFER_SIZE)
-  				edit = edit.decode()
-  				f=open(l[1]+"b",'r')
-  				fiche=f.read()
-  				f.close()
-  				tabfich = fiche.split("*")
-  				tabfich[int(num)]= edit
-  				texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n (3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
-  				f=open(l[1],'w')
-  				f.write(texte)
-  				f.close()
-  				os.popen("mv "+l[1]+" user/");
-  				f=open(l[1]+"b",'w')
-  				f.write("*".join(tabfich))
-  				f.close()
-  				r = os.popen("cd user/;cat "+l[1])
-  				self.conn.send((r.read()).encode())
+    				r = os.popen("cd user/;cat "+l[1]+" 2>&1")
+    				err = os.popen("echo $?");
+    				if err == 0 :
+    					self.conn.send((r.read()).encode())
+    					num = self.conn.recv(self.BUFFER_SIZE)
+    					num = num.decode()
+    					edit = self.conn.recv(self.BUFFER_SIZE)
+    					edit = edit.decode()
+    					f=open(l[1]+"b",'r')
+    					fiche=f.read()
+    					f.close()
+    					tabfich = fiche.split("*")
+    					tabfich[int(num)]= edit
+    					texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+    					f=open(l[1],'w')
+    					f.write(texte)
+    					f.close()
+    					os.popen("mv "+l[1]+" user/");
+    					f=open(l[1]+"b",'w')
+    					f.write("*".join(tabfich))
+    					f.close()
+    					r2 = os.popen("cd user/;cat "+l[1])
+    					self.conn.send((r2.read()).encode())
+    				else :
+    					sr = "1"
+    					self.conn.send(sr.encode())
 #---------------------------------------------------------
 
   			elif l[0] == "creer" :
@@ -61,7 +66,7 @@ class ClientThread(threading.Thread):
   					tabfich[i]= donne.decode()+" "
   					i = i+1
   				print (tabfich)
-  				texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n (3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+  				texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
   				f=open(l[1],'w')
   				f.write(texte)
   				f.close()

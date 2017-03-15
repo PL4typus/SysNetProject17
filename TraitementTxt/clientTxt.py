@@ -30,13 +30,18 @@ while 1 :
     print ("Voici l'affichage du fichier que vous voulez editer :\n")
     rep=s.recv(BUFFER_SIZE)
     print (rep.decode())
-    num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
-    s.send(num.encode())
-    edit=input("Ecrivez ce que vous voulez ecrire dans ce champs : ")
-    s.send(edit.encode())
-    print ("Voici l'affichage du fichier après edition :\n")
-    rep=s.recv(BUFFER_SIZE)
-    print (rep.decode())
+    if rep != "1" :
+      num = "0"
+      while num < "0" or num > "7" :
+        num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
+      s.send(num.encode())
+      edit=input("Ecrivez ce que vous voulez ecrire dans ce champs : ")
+      s.send(edit.encode())
+      print ("Voici l'affichage du fichier après edition :\n")
+      rep=s.recv(BUFFER_SIZE)
+      print (rep.decode())
+    else :
+      print ("Erreur le fichier ", l[1], " n'existe pas")
     
   elif l[0]=="creer" :
     s.send(cmd.encode())
