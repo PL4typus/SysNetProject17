@@ -30,8 +30,10 @@ class ClientThread(threading.Thread):
 #----------------------------------------------
   			if l[0]== "edit":
     				r = os.popen("cd user/;cat "+l[1]+" 2>&1")
-    				err = os.popen("echo $?");
-    				if err == 0 :
+    				err = os.popen("cd user/;cat "+l[1]+" 1>&2;echo $?");
+    				err= err.read()[0]
+    				print ("\nerr :", err)
+    				if err == "0" :
     					self.conn.send((r.read()).encode())
     					num = self.conn.recv(self.BUFFER_SIZE)
     					num = num.decode()
@@ -58,22 +60,29 @@ class ClientThread(threading.Thread):
 #---------------------------------------------------------
 
   			elif l[0] == "creer" :
-  				i=0
+  				err = os.popen("cd user/;cat "+l[1]+" 1>&2;echo $?");
+  				err = err.read()[0]
+  				self.conn.send(err.encode())
+  				i=1
   				tabfich = []
-  				while (i<=7) :
+  				donne = self.conn.recv(self.BUFFER_SIZE)
+  				if donne.decode() != "ERREUR":
   					tabfich.append(1)
-  					donne = self.conn.recv(self.BUFFER_SIZE)
-  					tabfich[i]= donne.decode()+" "
-  					i = i+1
-  				print (tabfich)
-  				texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
-  				f=open(l[1],'w')
-  				f.write(texte)
-  				f.close()
-  				os.popen("mv "+l[1]+" user/");
-  				f=open(l[1]+"b",'w')
-  				f.write("*".join(tabfich))
-  				f.close()
+  					tabfich[0]= donne.decode()+" "
+  					while (i<=7) :
+  						tabfich.append(1)
+  						donne = self.conn.recv(self.BUFFER_SIZE)
+  						tabfich[i]= donne.decode()+" "
+  						i = i+1
+  					print (tabfich)
+  					texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+  					f=open(l[1],'w')
+  					f.write(texte)
+  					f.close()
+  					os.popen("mv "+l[1]+" user/");
+  					f=open(l[1]+"b",'w')
+  					f.write("*".join(tabfich))
+  					f.close()
   				
 #---------------------------------------------------------
   			elif l[0] == "1":
