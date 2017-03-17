@@ -40,6 +40,7 @@ while saisie!= "exit":
 				saisie=input("Quel service? (Medecin, Infirmier, Interne)")
 				saisie=saisie.encode()
 				s.send(saisie)
+				print(saisie)
 
 				data=s.recv(10)
 				data=data.decode()
@@ -93,15 +94,16 @@ while saisie!= "exit":
 					saisie=saisie.encode()
 					s.send(saisie)
 				
-				verif=s.recv(10)
-				verif=verif.decode()
+					verif=s.recv(10)
+					verif=verif.decode()
 
-				print (verif)
-				if verif == "1":
-					print("Session ouverte")
-					verrouille = False
-				else:
-					print("Mot de passe incorrect")
+					print (verif)
+					if verif == "1":
+						print("Session ouverte")
+						verrouille = False
+
+					else:
+						print("Mot de passe incorrect")
 			
 	
 print("<<<<<<<<<<<<<<<<<<<<<<<<<Déconnexion du serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
