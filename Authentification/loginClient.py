@@ -40,9 +40,11 @@ while saisie!= "exit":
 				saisie=input("Quel service? (Medecin, Infirmier, Interne)")
 				saisie=saisie.encode()
 				s.send(saisie)
-		
+				print(saisie)
+
 				data=s.recv(10)
 				data=data.decode()
+
 				print (data)
 				if data == "1":
 					print("Vous etes un Médecin")
@@ -54,7 +56,7 @@ while saisie!= "exit":
 					print("Vous etes un Interne")
 					service=False
 				else:
-	
+					print(data)
 					print("Service inconnu")
 
 			while session and user != 'retour':
@@ -78,6 +80,7 @@ while saisie!= "exit":
 					print ("Utilisateur inconnu")
 
 			while verrouille and tout == False :
+
 				s.send(b"OKmdp")
 				Timeline=s.recv(30)
 				Timeline=Timeline.decode()
@@ -91,14 +94,16 @@ while saisie!= "exit":
 					saisie=saisie.encode()
 					s.send(saisie)
 				
-				verif=s.recv(10)
-				verif=verif.decode()
-				print (verif)
-				if verif == "1":
-					print("Session ouverte")
-					verrouille = False
-				else:
-					print("Mot de passe incorrect")
+					verif=s.recv(10)
+					verif=verif.decode()
+
+					print (verif)
+					if verif == "1":
+						print("Session ouverte")
+						verrouille = False
+
+					else:
+						print("Mot de passe incorrect")
 			
 	
 print("<<<<<<<<<<<<<<<<<<<<<<<<<Déconnexion du serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")

@@ -22,6 +22,8 @@ print ("Connection adresse:",addr)
 
 DROIT=""
 
+############################################################################################
+## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
@@ -32,16 +34,19 @@ def lecture_fichier(fichier) :
 	return l
 
 
+###########################################################################################
+
 def LOGIN():
 	tout = True
 	session = True
 	metier = True
 	verrouille = True
-	time=4
+	
 	
 
 	while tout :
 		user = ''
+		time=4
 		while metier:
 			
 			service=s.recv(30)
@@ -67,9 +72,9 @@ def LOGIN():
 			
 		while session and user != 'retour':
 
-			
 			user= s.recv(20)
 			user=user.decode()
+
 			print ("user",user)
 			if user == "retour" :
 				metier = True
@@ -79,7 +84,6 @@ def LOGIN():
 			else :
 		
 				for i in range(len(l)):
-					
 					if user == l[i][0]:
 						s.send(b"1")
 						session = False
@@ -90,6 +94,7 @@ def LOGIN():
 					print ( "je n'ai pas trouvé",user)	
 			
 		while verrouille and tout == False :
+
 			verif=s.recv(20)
 			print (verif.decode())
 			time-=1
@@ -98,7 +103,11 @@ def LOGIN():
 			s.send(Timeline)
 			
 			if time == 0:
-				s.send(b"0")
+				#s.send(b"0")
+				print("plus d'essai")
+				tout = True
+				metier=True
+				session=True
 				break
 			else:
 				saisie = s.recv(30)
@@ -106,14 +115,13 @@ def LOGIN():
 				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
 
 			
-			for i in range(len(l)):
-				
-				if user == l[i][0]:
-					if hash_mdp == l[i][1]:
-						verrouille=False
-						s.send(b"1")
-					else:
-						s.send(b"0")
+				for i in range(len(l)):
+					if user == l[i][0]:
+						if hash_mdp == l[i][1]:
+							verrouille=False
+							s.send(b"1")
+						else:
+							s.send(b"0")
 	s.close()
 
 LOGIN()
