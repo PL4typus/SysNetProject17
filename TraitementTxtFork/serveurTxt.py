@@ -13,8 +13,11 @@ s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 s.bind((TCP_IP,TCP_PORT))
 
-DROIT=""
 
+
+
+############################################################################################
+## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
@@ -25,90 +28,96 @@ def lecture_fichier(fichier) :
 	return l
 
 
-def LOGIN():
+###########################################################################################
+
+def LOGIN(conn):
 	tout = True
 	session = True
 	metier = True
 	verrouille = True
-	time=4
+	
 	
 
 	while tout :
 		user = ''
+		time=4
 		while metier:
 			
-			service=s.recv(30)
+			service=conn.recv(30)
 			service=service.decode()
 			print (service)
 			if service == "Medecin":
 				DROIT="M"
 				l=lecture_fichier("passwordMed.txt")
 				metier = False
-				s.send(b"1")
+				conn.send(b"1")
 			elif service == "Infirmier":
 				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
 				metier = False
-				s.send(b"2")	
+				conn.send(b"2")	
 			elif service == "Interne":
 				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
 				metier = False
-				s.send(b"3")
+				conn.send(b"3")
 			else:
-				s.send(b"0")
+				conn.send(b"0")
 			
 		while session and user != 'retour':
 
-			
-			user= s.recv(20)
+			user= conn.recv(20)
 			user=user.decode()
+
 			print ("user",user)
 			if user == "retour" :
 				metier = True
-				s.send(b"return")
+				conn.send(b"return")
 				print ("Boucle retour")
 				break
 			else :
 		
 				for i in range(len(l)):
-					
 					if user == l[i][0]:
-						s.send(b"1")
+						conn.send(b"1")
 						session = False
 						tout = False
 						print ( "j'ai trouvé",user)
 				if session == True:
-					s.send(b"0")
+					conn.send(b"0")
 					print ( "je n'ai pas trouvé",user)	
 			
 		while verrouille and tout == False :
-			verif=s.recv(20)
+
+			verif=conn.recv(20)
 			print (verif.decode())
 			time-=1
 			Timeline="Reste "+str(time)+" essai"
 			Timeline=Timeline.encode()
-			s.send(Timeline)
+			conn.send(Timeline)
 			
 			if time == 0:
-				s.send(b"0")
+				#s.send(b"0")
+				print("plus d'essai")
+				tout = True
+				metier=True
+				session=True
 				break
 			else:
-				saisie = s.recv(30)
+				saisie = conn.recv(30)
 				saisie=saisie.decode()
 				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
 
 			
-			for i in range(len(l)):
-				
-				if user == l[i][0]:
-					if hash_mdp == l[i][1]:
-						verrouille=False
-						s.send(b"1")
-					else:
-						s.send(b"0")
+				for i in range(len(l)):
+					if user == l[i][0]:
+						if hash_mdp == l[i][1]:
+							verrouille=False
+							conn.send(b"1")
+						else:
+							conn.send(b"0")
 
-
+	return DROIT
 
 def command_checker(command, status,conn, ip, port):
 
@@ -129,7 +138,7 @@ def command_checker(command, status,conn, ip, port):
 			reponse=rep.read()
 		conn.send(reponse.encode())
 	elif command[0] == "rm":
-		if status=="m": #a modifier avec login()
+		if status=="M": #a modifier avec login()
 			if command[1] not in buf:
 				reponse = "Vous n'avez pas l'autorisation de faire ça, ou le fichier demandé n'existe pas!\n"
 			else:
@@ -219,19 +228,20 @@ def CREER (conn, nomF) :
   				
 
 
-def barman(conn,ip,port):
+def barman(conn,ip,port,DROIT):
 	print("child process PID = ",os.getpid()," is client with ",ip," : ",port)
 	# reception de m ou i pour savoir si c'est un médecin ou autre, à remplacer quand on mattra l'authentifictaion
 	
 	while 1 :
-			data = conn.recv(BUFFER_SIZE)
-			data= data.decode()
-			if DROIT == "M" : # attribution des droit
-				os.popen("cd user/;chmod +w $PWD")
-			else :
-				os.popen("cd user/;chmod -w $PWD")
-			print (data)
-			command_checker(data,DROIT,conn,ip, port)
+		data = conn.recv(BUFFER_SIZE)
+		data= data.decode()
+		print (DROIT)
+		if DROIT == "M" : # attribution des droit
+			os.popen("cd user/;chmod +w $PWD")
+		else :
+			os.popen("cd user/;chmod -w $PWD")
+		print (data)
+		command_checker(data,DROIT,conn,ip, port)
 #----------------------------------------------
 #			if l[0]== "edit" and droit == "m": #pour editer un texte seul les medecins peuvent
 #				EDIT(conn,l[1])
@@ -252,8 +262,9 @@ while True:
 	(conn, (ip,port)) = s.accept()
 	child_pid=os.fork()
 	if child_pid == 0:#si pid = 0 ça veut dire qu'on est dans le child process
-		LOGIN()
-		barman(conn,ip,port )
+		DROIT = LOGIN(conn)
+		print ("droit ",DROIT)
+		barman(conn,ip,port,DROIT)
 	
 
 s.close()
