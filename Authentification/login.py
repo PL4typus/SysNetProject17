@@ -20,12 +20,7 @@ s, addr = s.accept()
 
 print ("Connection adresse:",addr)
 
-mdpMed="azerty"
-Med="medecin"
-
-cleMed="bouteille"
-cleInf="livre"
-cleInt="portable"
+DROIT=""
 
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
@@ -53,14 +48,17 @@ def LOGIN():
 			service=service.decode()
 			print (service)
 			if service == "Medecin":
+				DROIT="M"
 				l=lecture_fichier("passwordMed.txt")
 				metier = False
 				s.send(b"1")
 			elif service == "Infirmier":
+				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
 				metier = False
 				s.send(b"2")	
 			elif service == "Interne":
+				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
 				metier = False
 				s.send(b"3")
