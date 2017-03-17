@@ -12,6 +12,7 @@ TCP_PORT=6262
 BUFFER_SIZE=100
 
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((TCP_IP, TCP_PORT))
 s.listen(1)
 
@@ -39,54 +40,56 @@ def lecture_fichier(fichier) :
 def LOGIN():
 	tout = True
 	session = True
-	service = True
+	metier = True
 	verrouille = True
 	time=4
 	
 
 	while tout :
 		user = ''
-		while service:
+		while metier:
 			
 			service=s.recv(10)
 			service=service.decode()
 			if service == "Medecin":
 				l=lecture_fichier("passwordMed.txt")
-				service = False
+				metier = False
 				s.send(b"1")
 			elif service == "Infirmier":
 				l=lecture_fichier("passwordInf.txt")
-				service = False
+				metier = False
 				s.send(b"2")	
 			elif service == "Interne":
 				l=lecture_fichier("passwordInt.txt")
-				service = False
+				metier = False
 				s.send(b"3")
 			else:
 				s.send(b"0")
 			
 		while session and user != 'retour':
 
-			
 			user= s.recv(20)
 			user=user.decode()
+			print("reçut :", user)
 
 			if user == 'retour' :
-				service = True
+				metier = True
 				s.send(b"return")
 				break
 			else :
 		
 				for i in range(len(l)):
-					for j in range(len(l[i])):
-						if user == l[i][0]:
-							s.send(b"1")
-							session = False
-							tout = False
+					if user == l[i][0]:
+						s.send(b"1")
+						session = False
+						tout = False
 				if session == True:	
 					s.send(b"0")	
-			s.recv(30)
+
+
 		while verrouille and tout == False :
+			ok=s.recv(30)
+
 			time-=1
 			Timeline="Reste "+str(time)+" essai"
 			Timeline=Timeline.encode()
@@ -102,13 +105,12 @@ def LOGIN():
 
 			
 			for i in range(len(l)):
-				for j in range(len(l[i])):
-					if user == l[i][0]:
-						if hash_mdp == l[i][1]:
-							verrouille=False
-							s.send(b"1")
-						else:
-							s.send(b"0")
+				if user == l[i][0]:
+					if hash_mdp == l[i][1]:
+						verrouille=False
+						s.send(b"1")
+					else:
+						s.send(b"0")
 	s.close()
 
 LOGIN()
