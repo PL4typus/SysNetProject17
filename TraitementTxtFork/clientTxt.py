@@ -1,12 +1,12 @@
 #!/usr/bin/env python3.4
-
+#coding: utf8
 
 
 import socket
+from getpass import getpass
 
 
-
-TCP_IP ='127.0.01'
+TCP_IP ='127.0.0.1'
 
 TCP_PORT = 6262
 
@@ -17,10 +17,90 @@ BUFFER_SIZE = 1024
 s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 s.connect((TCP_IP,TCP_PORT))
+saisie=""
 
-d=input("Etes vous medecin ou infirmiere (m/i) : ")
+print("=====================================================================================")
+print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
+print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
-s.send(d.encode())
+while saisie!= "exit":
+	service=True
+	session=True
+	tout=True
+	verrouille=True
+
+	saisie=input(">> ")
+	
+	#if saisie == "signup":
+	if saisie == "login":
+		
+		while tout:
+			user=''
+			while service:
+				saisie=input("Quel service? (Medecin, Infirmier, Interne)")
+				saisie=saisie.encode()
+				s.send(saisie)
+		
+				data=s.recv(10)
+				data=data.decode()
+				print (data)
+				if data == "1":
+					print("Vous etes un Médecin")
+					service=False
+				elif data == "2":
+					print("Vous etes un Infirmier")
+					service=False
+				elif data == "3":
+					print("Vous etes un Interne")
+					service=False
+				else:
+	
+					print("Service inconnu")
+
+			while session and user != 'retour':
+
+				user=input("Utilisateur: ")
+				user=user.encode()
+				s.send(user)
+		
+				data2=s.recv(30)
+				data2=data2.decode()	
+				print(data2)
+				
+				if data2 == "1":
+					session=False
+					tout = False
+					print("Utilisateur reconnu")
+				elif data2 == "return":
+					service=True
+					break
+				else:
+					print ("Utilisateur inconnu")
+
+			while verrouille and tout == False :
+				s.send(b"OKmdp")
+				Timeline=s.recv(30)
+				Timeline=Timeline.decode()
+				print(Timeline)
+				
+				if  Timeline == "Reste 0 essai":
+					print("Plus d'essai disponible")
+					break
+				else:
+					saisie=getpass("Mot de passe: ")
+					saisie=saisie.encode()
+					s.send(saisie)
+				
+				verif=s.recv(10)
+				verif=verif.decode()
+				print (verif)
+				if verif == "1":
+					print("Session ouverte")
+					verrouille = False
+				else:
+					print("Mot de passe incorrect")
+
+
 
 while 1 :
   cmd=input("Saisir la commande ")
