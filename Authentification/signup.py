@@ -49,7 +49,7 @@ def SIGNUP():
 	
 	elif service == 'Infirmier' :
 		saisie=input("Cle Infirmier : ")
-		if saisie == cleMed:
+		if saisie == cleInf:
 			mdp = getpass("Mot de passe :")
 			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
 			f = open('passwordInf.txt','a')
@@ -60,7 +60,7 @@ def SIGNUP():
 
 	elif service == 'Interne' :
 		saisie=input("Cle Interne : ")
-		if saisie == cleMed:
+		if saisie == cleInt:
 			mdp = getpass("Mot de passe :")
 			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
 			f = open('passwordInt.txt','a')
