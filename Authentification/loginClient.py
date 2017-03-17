@@ -43,15 +43,15 @@ while saisie!= "exit":
 
 				data=s.recv(10)
 				data=data.decode()
-				data=int(data)
-		
-				if data == 1:
+
+				print (data)
+				if data == "1":
 					print("Vous etes un Médecin")
 					service=False
-				elif data == 2:
+				elif data == "2":
 					print("Vous etes un Infirmier")
 					service=False
-				elif data == 3:
+				elif data == "3":
 					print("Vous etes un Interne")
 					service=False
 				else:
@@ -66,7 +66,8 @@ while saisie!= "exit":
 		
 				data2=s.recv(30)
 				data2=data2.decode()	
-				print("on a reçu :", data2)
+				print(data2)
+				
 				if data2 == "1":
 					session=False
 					tout = False
@@ -78,7 +79,8 @@ while saisie!= "exit":
 					print ("Utilisateur inconnu")
 
 			while verrouille and tout == False :
-				s.send(b"OK")
+
+				s.send(b"OKmdp")
 				Timeline=s.recv(30)
 				Timeline=Timeline.decode()
 				print(Timeline)
@@ -93,6 +95,8 @@ while saisie!= "exit":
 				
 				verif=s.recv(10)
 				verif=verif.decode()
+
+				print (verif)
 				if verif == "1":
 					print("Session ouverte")
 					verrouille = False

@@ -20,12 +20,7 @@ s, addr = s.accept()
 
 print ("Connection adresse:",addr)
 
-mdpMed="azerty"
-Med="medecin"
-
-cleMed="bouteille"
-cleInf="livre"
-cleInt="portable"
+DROIT=""
 
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
@@ -49,17 +44,21 @@ def LOGIN():
 		user = ''
 		while metier:
 			
-			service=s.recv(10)
+			service=s.recv(30)
 			service=service.decode()
+			print (service)
 			if service == "Medecin":
+				DROIT="M"
 				l=lecture_fichier("passwordMed.txt")
 				metier = False
 				s.send(b"1")
 			elif service == "Infirmier":
+				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
 				metier = False
 				s.send(b"2")	
 			elif service == "Interne":
+				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
 				metier = False
 				s.send(b"3")
@@ -70,11 +69,12 @@ def LOGIN():
 
 			user= s.recv(20)
 			user=user.decode()
-			print("reçut :", user)
 
-			if user == 'retour' :
+			print ("user",user)
+			if user == "retour" :
 				metier = True
 				s.send(b"return")
+				print ("Boucle retour")
 				break
 			else :
 		
@@ -83,13 +83,14 @@ def LOGIN():
 						s.send(b"1")
 						session = False
 						tout = False
-				if session == True:	
-					s.send(b"0")	
-
-
+						print ( "j'ai trouvé",user)
+				if session == True:
+					s.send(b"0")
+					print ( "je n'ai pas trouvé",user)	
+			
 		while verrouille and tout == False :
-			ok=s.recv(30)
-
+			verif=s.recv(20)
+			print (verif.decode())
 			time-=1
 			Timeline="Reste "+str(time)+" essai"
 			Timeline=Timeline.encode()

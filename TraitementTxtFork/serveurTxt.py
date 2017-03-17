@@ -3,6 +3,7 @@
 
 import socket,sys,os
 
+
 TCP_IP  = '127.0.0.1'
 TCP_PORT = 6262
 BUFFER_SIZE = 2048
@@ -13,31 +14,32 @@ s.bind((TCP_IP,TCP_PORT))
 
 def barman(conn,ip,port):
 	print("child process PID = ",os.getpid()," is client with ",ip," : ",port)
+	# reception de m ou i pour savoir si c'est un médecin ou autre, à remplacer quand on mattra l'authentifictaion
 	data = conn.recv(BUFFER_SIZE)
 	droit=data.decode()
 	while 1 :
 			data = conn.recv(BUFFER_SIZE)
 			data= data.decode()
-			if droit == "m" :
+			if droit == "m" : # attribution des droit
 				os.popen("cd user/;chmod +w $PWD")
 			else :
 				os.popen("cd user/;chmod -w $PWD")
 			print (data)
-			l = data.split(" ")
+			l = data.split(" ")#split pour si il a plusieur argument
 
 #----------------------------------------------
-			if l[0]== "edit" and droit == "m":
+			if l[0]== "edit" and droit == "m": #pour editer un texte seul les medecins peuvent
 				r = os.popen("cd user/;cat "+l[1]+" 2>&1")
-				err = os.popen("cd user/;cat "+l[1]+" 1>&2;echo $?");
+				err = os.popen("cd user/;cat "+l[1]+" 1>&2;echo $?");#pour voir si le fichier existe
 				err= err.read()[0]
 				print ("\nerr :", err)
-				if err == "0" :
+				if err == "0" : #si le fichier existe
 					conn.send((r.read()).encode())
-					num = conn.recv(BUFFER_SIZE)
+					num = conn.recv(BUFFER_SIZE)#récupération du numéro a modifier
 					num = num.decode()
-					edit = conn.recv(BUFFER_SIZE)
+					edit = conn.recv(BUFFER_SIZE)#récupération de la chaine de caractère à écrire
 					edit = edit.decode()
-					f=open(l[1]+"b",'r')
+					f=open(l[1]+"b",'r')#récupération du fichier b qui sert récupérer les différents champs séparement
 					fiche=f.read()
 					f.close()
 					tabfich = fiche.split("*")
@@ -46,13 +48,13 @@ def barman(conn,ip,port):
 					f=open(l[1],'w')
 					f.write(texte)
 					f.close()
-					os.popen("mv "+l[1]+" user/");
+					os.popen("mv "+l[1]+" user/");#on écrit le fichier que l'utilisateur voit et on le met dans user/
 					f=open(l[1]+"b",'w')
-					f.write("*".join(tabfich))
+					f.write("*".join(tabfich))#on écrit le fichier b
 					f.close()
 					r2 = os.popen("cd user/;cat "+l[1])
-					conn.send((r2.read()).encode())
-				else :
+					conn.send((r2.read()).encode())#on renvoi l'affichage du fichier modifié
+				else :#si le fichier existe pas
 					sr = "1"
 					conn.send(sr.encode())
 #---------------------------------------------------------
@@ -60,14 +62,14 @@ def barman(conn,ip,port):
 			elif l[0] == "creer" and droit == "m":
 				err = os.popen("cd user/;cat "+l[1]+" 1>&2;echo $?");
 				err = err.read()[0]
-				conn.send(err.encode())
+				conn.send(err.encode())#on envoie la retour de cat, si c'est 0 ça veut dire qu'un fichier du même nom existe et on va demander à l'utilisateur s'il veut l'écraser ou pas
 				i=1
 				tabfich = []
 				donne = conn.recv(BUFFER_SIZE)
-				if donne.decode() != "ERREUR":
-					tabfich.append(1)
-					tabfich[0]= donne.decode()+" "
-					while (i<=7) :
+				if donne.decode() != "ERREUR":# si le fichier est ecrasé ou si il n'existe pas
+					tabfich.append(1)# on ajoute un element à la liste
+					tabfich[0]= donne.decode()+" "#on met la donné dans le tableau
+					while (i<=7) :#on repète l'opération 6 fois
 						tabfich.append(1)
 						donne = conn.recv(BUFFER_SIZE)
 						tabfich[i]= donne.decode()+" "
@@ -77,9 +79,9 @@ def barman(conn,ip,port):
 					f=open(l[1],'w')
 					f.write(texte)
 					f.close()
-					os.popen("mv "+l[1]+" user/");
+					os.popen("mv "+l[1]+" user/");#on ecrit le fichier utilisateur dans user/
 					f=open(l[1]+"b",'w')
-					f.write("*".join(tabfich))
+					f.write("*".join(tabfich))#on écrit le fichier b
 					f.close()
   				
 #---------------------------------------------------------
@@ -95,7 +97,7 @@ while True:
 	(conn, (ip,port)) = s.accept()
 	child_pid=os.fork()
 	if child_pid == 0:#si pid = 0 ça veut dire qu'on est dans le child process
-
+		LOGIN()
 		barman(conn,ip,port )
 	
 
