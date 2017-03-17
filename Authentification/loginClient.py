@@ -17,7 +17,7 @@ s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 # on a specified port
 s.connect((localhost,port))
 
-saisie=b""
+saisie=""
 
 print("=====================================================================================")
 print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -37,13 +37,13 @@ while saisie!= "exit":
 		while tout:
 			user=''
 			while service:
-				saisie=input("Quel service? (Medecin, Infirmiere, Interne)")
+				saisie=input("Quel service? (Medecin, Infirmier, Interne)")
 				saisie=saisie.encode()
 				s.send(saisie)
 		
 				data=s.recv(10)
 				data=data.decode()
-		
+				print (data)
 				if data == "1":
 					print("Vous etes un Médecin")
 					service=False
@@ -63,22 +63,22 @@ while saisie!= "exit":
 				user=user.encode()
 				s.send(user)
 		
-				data=s.recv(30)
-				data=data.decode()	
-				print(data)
-				s.send(b"OK")
-				if data == "11":
+				data2=s.recv(30)
+				data2=data2.decode()	
+				print(data2)
+				
+				if data2 == "1":
 					session=False
 					tout = False
 					print("Utilisateur reconnu")
-				elif data == "return":
+				elif data2 == "return":
 					service=True
 					break
 				else:
 					print ("Utilisateur inconnu")
 
 			while verrouille and tout == False :
-			
+				s.send(b"OKmdp")
 				Timeline=s.recv(30)
 				Timeline=Timeline.decode()
 				print(Timeline)
@@ -87,14 +87,14 @@ while saisie!= "exit":
 					print("Plus d'essai disponible")
 					break
 				else:
-					saisie=input("Mot de passe: ")
+					saisie=getpass("Mot de passe: ")
 					saisie=saisie.encode()
 					s.send(saisie)
 				
 				verif=s.recv(10)
 				verif=verif.decode()
 				print (verif)
-				if verif == "11":
+				if verif == "1":
 					print("Session ouverte")
 					verrouille = False
 				else:
