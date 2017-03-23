@@ -166,6 +166,7 @@ def command_checker(command, status,conn, ip, port):
 	elif command[0] == "edit": #nom du fichier
 		#wip
 		EDIT(conn, command[1])
+
 	elif command[0] == "creer": #nom du fichier
 		#wip
 		CREER(conn,command[1])
