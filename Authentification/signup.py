@@ -1,11 +1,26 @@
-#!/usr/bin/python
+#!/usr/bin/python3.4
 #Client authentification
 #coding: utf8
-
 import os
 from getpass import getpass
 import hashlib
 
+
+import socket
+TCP_IP = '127.0.0.1'
+TCP_PORT=6265
+BUFFER_SIZE=100
+
+s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind((TCP_IP, TCP_PORT))
+s.listen(1)
+
+s, addr = s.accept()
+
+print ("Connection adresse:",addr)
+
+DROIT=""
 
 
 mdpMed="azerty"
@@ -15,7 +30,7 @@ cleMed="bouteille"
 cleInf="livre"
 cleInt="portable"
 
-
+#################### Fonction pour la liste des utilisateur avec leur mots de pass ########
 
 def lecture_fichier(fichier) :
 	f = open(fichier,'r')
@@ -26,55 +41,93 @@ def lecture_fichier(fichier) :
 		l[i] = l[i].split(':')
 	return l
 
-
+##########################################################################
 
 
 def SIGNUP():
 
-	user=input("Utilisateur : ")
+	user=s.recv(30)
+	print("l'utilisateur est : ", user)
+	if user == "administrateur" :
+		user1="admin"
+		s.send(user1.encode())
 
-	service = input("Sous quel service voulez vous vous enregistrer (Medecin, Infirmier, Interne)? ")
+		choix=s.recv(32).decode()
+		print(choix)
 
-	if service == 'Medecin' :
+		if choix == "signup" :
+			choix1 = "signup1"
+			s.send(choix1.encode())
 
-		saisie=input("Cle Medecin : ")
-		if saisie == cleMed:
-			mdp = getpass("Mot de passe :")
-			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
-			f = open('passwordMed.txt','a')
-			f.write(user+":"+hash_mdp+";")
-		
-		else:
-			print ("Cle errone, inscription impossible")
-	
-	elif service == 'Infirmier' :
-		saisie=input("Cle Infirmier : ")
-		if saisie == cleInf:
-			mdp = getpass("Mot de passe :")
-			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
-			f = open('passwordInf.txt','a')
-			f.write(user+":"+hash_mdp+";")
-		
-		else:
-			print ("Cle errone, inscription impossible")
+			service = s.recv(32).decode()
+			print("service : ", service)
 
-	elif service == 'Interne' :
-		saisie=input("Cle Interne : ")
-		if saisie == cleInt:
-			mdp = getpass("Mot de passe :")
-			hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
-			f = open('passwordInt.txt','a')
-			f.write(user+":"+hash_mdp+";")
-		
-		else:
-			print ("Cle errone, inscription impossible")
+			if service == 'Medecin' :
+				service1="okMed"
+				s.send(service1.encode())
+
+				saisie=s.recv(32).decode()
+				if saisie == cleMed:
+					clé="okCle"
+					s.send(clé.encode())
+
+					hash_mdp = s.recv(64).decode()
+					f = open('passwordMed.txt','a')
+					f.write(user+":"+hash_mdp+";")
+				
+				else:
+					clé="Pas la bonne clé pour le service médecin"
+					s.send(clé.encode())
+					print ("Cle errone, inscription impossible")
+			
+
+			elif service == 'Infirmier' :
+				service1="okInf"
+				s.send(service1.encode())
+
+				saisie=s.recv(32).decode()
+				if saisie == cleInf:
+					clé="okCle"
+					s.send(clé.encode())
+
+					hash_mdp = s.recv(64).decode()
+					f = open('passwordInf.txt','a')
+					f.write(user+":"+hash_mdp+";")
+				
+				else:
+					clé="Pas la bonne clé pour le service Infirmier"
+					s.send(clé.encode())					
+					print ("Inscription impossible")
+
+			elif service == 'Interne' :
+				service1="okInt"
+				s.send(service1.encode())
+
+				saisie=s.recv(32).decode()
+				if saisie == cleInt:
+					clé="okCle"
+					s.send(clé.encode())
+
+					hash_mdp = s.recv(64).decode()
+					f = open('passwordInt.txt','a')
+					f.write(user+":"+hash_mdp+";")
+				
+				else:
+					clé="Pas la bonne clé pour le service Interne."
+					print ("Inscription impossible")
+
+			else :
+				service_erreur="Ce service n'existe pas"
+				s.send(service_erreur.encode())
+				print ("Ce service n'existe pas.")
 
 	else :
-		print ("Ce service n'existe pas.")
+		user1="Commande inconnue"
+		s.send(user1.encode())
 
 
 SIGNUP()
-
+print("Fin serveur")
 
 
 
