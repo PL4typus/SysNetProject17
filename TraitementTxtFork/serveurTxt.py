@@ -186,7 +186,7 @@ def EDIT (conn, nomF):
 		f.close()
 		tabfich = fiche.split("*")
 		tabfich[int(num)]= edit
-		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n\n(3)Allergies: "+tabfich[3]+"\n\n(4)Symptomes: " +tabfich[4]+"\n\n(5)Diagnostique: "+tabfich[5]+"\n\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]+"\n"
 		f=open(nomF,'w')
 		f.write(texte)
 		f.close()
@@ -217,7 +217,7 @@ def CREER (conn, nomF) :
 			tabfich[i]= donne.decode()+" "
 			i = i+1
 		print (tabfich)
-		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n\n(3)Allergies: "+tabfich[3]+"\n\n(4)Symptomes: " +tabfich[4]+"\n\n(5)Diagnostique: "+tabfich[5]+"\n\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]+"\n"
 		f=open(nomF,'w')
 		f.write(texte)
 		f.close()
