@@ -3,6 +3,15 @@
 
 import sys, socket, os, time
 
+def lecture_fichier(fichier) :
+	f = open(fichier,'r')
+	fo = f.read(1024)
+	fo=fo.rstrip()
+	l = fo.split(';') 
+	for i in range(len(l)) :
+		l[i] = l[i].split(':')
+	return l
+
 def rights(Droit,user):
 	if Droit=="M":
 		while True:
@@ -11,7 +20,12 @@ def rights(Droit,user):
 			ans=input(">")
 			if ans in {"A","a"}:
 				print("Ajout de droits: A qui voulez vous ajouter des droits ? ")
-				print("
+				while ans not in {"Inf","I","INF","inf","i","q","Q"}:
+					print("(Inf)irmier \t (I)nterne \t (Q)uitter")
+					ans = input("\t>")
+				if ans in {"Inf","INF"}:
+					print("Quelle personne ?")
+					
 				
 			if ans in {"R","r"}:
 				
