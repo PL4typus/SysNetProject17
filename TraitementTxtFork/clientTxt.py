@@ -126,7 +126,7 @@ while saisie!= "exit":
 						while num < "0" or num > "7" :
 							num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
 						s.send(num.encode())
-						if num >= 3 and num <= 6 :
+						if int(num) >= 3 and int(num) <= 6 :
 							print("Ecrivez ce que vous voulez ecrire dans ce champs : ")
 							edit = PlsrLignes()
 						else :
