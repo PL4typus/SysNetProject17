@@ -25,7 +25,10 @@ def rights(Droit,user):
 					ans = input("\t>")
 				if ans in {"Inf","INF"}:
 					print("Quelle personne ?")
-					
+					l=lecture_fichier("../../Authentification/passwordInf.txt")
+					for x in l[i][0]:
+						
+						 
 				
 			if ans in {"R","r"}:
 				
