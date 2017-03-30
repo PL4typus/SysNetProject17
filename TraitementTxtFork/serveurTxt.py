@@ -171,7 +171,8 @@ def command_checker(command, status,conn, ip, port, dossier):
 		
 	elif command[0] == "cd":
 		bufdos=os.popen("cd "+dossier+";ls -d */") 
-		bufdos=bufdos.read()
+		bufdos=bufdos.read()+".."
+		print (bufdos)
 		if len(command)<2:
 			r="Erreur: argument manquant"
 			conn.send(r.encode())
@@ -185,19 +186,21 @@ def command_checker(command, status,conn, ip, port, dossier):
 					reponse = "Vous n'avez pas l'autorisation de faire ça, ou le fichier demandé n'existe pas!\n"
 					conn.send(reponse.encode())
 				else :
+					print ("commande faite : cd "+dossier+";cd "+command[1]+";echo $PWD")
 					r=os.popen("cd "+dossier+";cd "+command[1]+";echo $PWD")
 					r=r.read()
+					print ("réponse : "+r)
 					r= r.split("/")
+					r[len(r)-1]=r[len(r)-1].strip()#met automatiquement un retour a la ligne à la fin donc on l'enlève
 					i=0
 					b=0
-					while(i<len(r)) :
+					while(i<len(r)) :#boucle pour avoir le chemin que à partir de user
 						if b == 1:
 							dossier = dossier+"/"+r[i]
 						if r[i] == "user" :
 							dossier="user"
 							b=1
 						i = i+1
-					dossier = dossier.strip();
 					reponse = "Nouveau repertoire courant : "+dossier
 					conn.send(reponse.encode())
 	elif command[0] == "edit": #nom du fichier
