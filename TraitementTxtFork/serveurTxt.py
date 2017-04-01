@@ -203,6 +203,21 @@ def command_checker(command, status,conn, ip, port, dossier):
 						i = i+1
 					reponse = "Nouveau repertoire courant : "+dossier
 					conn.send(reponse.encode())
+	elif command[0] == "cp" :
+		if len(command)<3:
+			r="Erreur: argument manquant"
+			conn.send(r.encode())
+		else :
+			
+			if dossier == "user" and command[2] ==".." :
+				r = "Vous n'avez pas l'autorisation de faire cela"
+				conn.send(r.encode())
+			else :
+				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
+				rep = "Commande cp effectuée\n"+rep.read()
+				conn.send(rep.encode())
+			
+		
 	elif command[0] == "edit": #nom du fichier
 
 		EDIT(conn, command[1],dossier)

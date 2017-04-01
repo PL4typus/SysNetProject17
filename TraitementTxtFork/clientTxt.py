@@ -28,12 +28,12 @@ def PlsrLignes ():
 			a = a + "\n"+str(b)
 	return a
 
-
-print("=====================================================================================")
-print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
-print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
-
 while saisie!= "exit":
+	print("=====================================================================================")
+	print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
+	print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
+
+
 	service=True
 	session=True
 	tout=True
@@ -205,3 +205,5 @@ while saisie!= "exit":
 				s.send(cmd.encode())
 				rep=s.recv(BUFFER_SIZE)
 				print (rep.decode())
+
+
