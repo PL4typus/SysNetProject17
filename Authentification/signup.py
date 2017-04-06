@@ -32,11 +32,11 @@ cleInt="portable"
 
 #################### Fonction pour la liste des utilisateur avec leur mots de pass ########
 
-def lecture_fichier(fichier) :
+def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
 	fo = f.read(2048)
 	fo=fo.rstrip()
-	l = fo.split(';') 
+	l = fo.split(';')
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
 	return l
@@ -62,25 +62,29 @@ def SIGNUP():
 		user1="admin"
 		s.send(user1.encode())
 
-
+		tout=False
 		mdp_admin1 =''
 		while mdp_admin1 != 'correct' :
 			mdp_admin=s.recv(32).decode()
 			print(mdp_admin)
 
 			if mdp_admin=='root':
+				print("mdp correct !")
 				mdp_admin1='correct'
 				s.send(mdp_admin1.encode())
 				tout =True
 
 			elif mdp_admin=='annuler':
-				mdp_admin1=='annuler'
+				mdp_admin1='annuler'
 				s.send(mdp_admin1.encode())
-				tout= False
-			else :
+				print("Le client veut annuler")
+				break
+
+			elif mdp_admin != 'annuler' or mdp_admin != 'root':
+				print(mdp_admin)
 				mdp_admin1='non'
 				s.send(mdp_admin1.encode())
-				continue
+				print("le client a fait n'importe quoi")
 
 
 		while tout :
@@ -149,7 +153,7 @@ def SIGNUP():
 							invalide=True
 							while invalide :
 								nom=s.recv(24).decode()
-								if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 1:
+								if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 0:
 									f = open('passwordMed.txt','a')
 									f.write(nom+":")
 									oknom="okNom"
@@ -220,8 +224,23 @@ def SIGNUP():
 		s.send(user1.encode())
 
 
-SIGNUP()
+#SIGNUP()
 print("Fin serveur")
 
+print(lecture_fichier('passwordMed.txt'))
 
+print("Alo")
+a=verification_nom_utilistaeur('Alo', 'passwordMed.txt')
+print(a)
 
+print("Paul")
+a=verification_nom_utilistaeur('Paul', 'passwordMed.txt')
+print(a)
+
+print("Roger")
+a=verification_nom_utilistaeur('Roger', 'passwordMed.txt')
+print(a)
+
+print("Aller")
+a=verification_nom_utilistaeur('Aller', 'passwordMed.txt')
+print(a)

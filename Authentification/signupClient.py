@@ -37,17 +37,20 @@ if user1 == "admin" :
 		mdp_admin=input("mot de passe administrateur : ")
 		s.send(mdp_admin.encode())
 		mdp_admin1=s.recv(16).decode()
-		print(mdp_admin1)
+		print("reponse : " ,mdp_admin1)
 
-		if mdp_admin1=="annuler" :
-				mdp_admin1='correct'
-				tout=False
+		if mdp_admin1=='annuler' :
+			print("Vous voulez annuler")
+			mdp_admin1='correct'
+			tout=False
+			break
 
 		elif mdp_admin1=='correct' :
+			print("Code bon")
 			tout=True
 
 		else :
-			continue
+			print("Veuillez réessayez")
 
 	while tout :
 
@@ -159,3 +162,7 @@ if user1 == "admin" :
 
 else :
 	print("nop pas admin")
+
+print("==================================================")
+print("					Fin de connexion")
+print("==================================================")
