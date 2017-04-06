@@ -62,137 +62,158 @@ def SIGNUP():
 		user1="admin"
 		s.send(user1.encode())
 
-		tout =True
+
+		mdp_admin1 =''
+		while mdp_admin1 != 'correct' :
+			mdp_admin=s.recv(32).decode()
+			print(mdp_admin)
+
+			if mdp_admin=='root':
+				mdp_admin1='correct'
+				s.send(mdp_admin1.encode())
+				tout =True
+
+			elif mdp_admin=='annuler':
+				mdp_admin1=='annuler'
+				s.send(mdp_admin1.encode())
+				tout= False
+			else :
+				mdp_admin1='non'
+				s.send(mdp_admin1.encode())
+				continue
+
 
 		while tout :
 
-			choix=s.recv(32).decode()
-			print(choix)
+				choix=s.recv(32).decode()
+				print(choix)
 
-			if choix=='annuler' :
-				break
+				if choix=='annuler' :
+					break
 
-			elif choix == "signup" :
-				choix1 = "signup1"
-				s.send(choix1.encode())
+				elif choix == "signup" :
+					choix1 = "signup1"
+					print("go signup")
+					s.send(choix1.encode())
 
-				service = s.recv(32).decode()
-				print("service : ", service)
+					service = s.recv(32).decode()
+					print("Le service choisi est : ", service)
 
-				if service == 'Medecin' :
-					service1="okMed"
-					s.send(service1.encode())
+					if service == 'Medecin' :
+						service1="okMed"
+						print("go signup Medecin")
+						s.send(service1.encode())
 
-					saisie=s.recv(32).decode()
-					if saisie == cleMed:
-						clé="okCle"
-						s.send(clé.encode())
+						saisie=s.recv(32).decode()
+						if saisie == cleMed:
+							clé="okCle"
+							s.send(clé.encode())
 
-						invalide=True
-						while invalide :
-							nom=s.recv(24).decode()
-							if verification_nom_utilistaeur(nom, 'passwordMed.txt')== 1 :
-								f = open('passwordMed.txt','a')
-								f.write(nom+":")
-								oknom="okNom"
-								invalide = False
-							else :
-								oknom="nop"
-								s.send(oknom.encode())
+							invalide=True
+							while invalide :
+								nom=s.recv(24).decode()
+								if verification_nom_utilistaeur(nom, 'passwordMed.txt')== 1 :
+									f = open('passwordMed.txt','a')
+									f.write(nom+":")
+									oknom="okNom"
+									invalide = False
+								else :
+									oknom="nop"
+									s.send(oknom.encode())
 
 
-						s.send(oknom.encode())
+							s.send(oknom.encode())
 
-						hash_mdp = s.recv(64).decode()
-						f = open('passwordMed.txt','a')
-						f.write(hash_mdp+";")
-						tout=False
-						print("Fin enregistrement")
+							hash_mdp = s.recv(64).decode()
+							f = open('passwordMed.txt','a')
+							f.write(hash_mdp+";")
+							tout=False
+							print("Fin enregistrement")
 
+						
+						else:
+							clé="Pas la bonne clé pour le service médecin"
+							s.send(clé.encode())
+							print ("Cle errone, inscription impossible")
 					
-					else:
-						clé="Pas la bonne clé pour le service médecin"
-						s.send(clé.encode())
-						print ("Cle errone, inscription impossible")
-				
 
-				elif service == 'Infirmier' :
-					service1="okInf"
-					s.send(service1.encode())
+					elif service == 'Infirmier' :
+						service1="okInf"
+						s.send(service1.encode())
 
-					saisie=s.recv(32).decode()
-					if saisie == cleInf:
-						clé="okCle"
-						s.send(clé.encode())
+						saisie=s.recv(32).decode()
+						if saisie == cleInf:
+							clé="okCle"
+							s.send(clé.encode())
 
-						invalide=True
-						while invalide :
-							nom=s.recv(24).decode()
-							if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 1:
-								f = open('passwordMed.txt','a')
-								f.write(nom+":")
-								oknom="okNom"
-								invalide = False
-							else :
-								oknom="nop"
-								s.send(oknom.encode())
+							invalide=True
+							while invalide :
+								nom=s.recv(24).decode()
+								if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 1:
+									f = open('passwordMed.txt','a')
+									f.write(nom+":")
+									oknom="okNom"
+									invalide = False
+								else :
+									oknom="nop"
+									s.send(oknom.encode())
 
-						s.send(oknom.encode())
+							s.send(oknom.encode())
 
-						hash_mdp = s.recv(64).decode()
-						f = open('passwordInf.txt','a')
-						f.write(hash_mdp+";")
-						tout=False
-						print("Fin enregistrement")
-					
-					else:
-						clé="Pas la bonne clé pour le service Infirmier"
-						s.send(clé.encode())					
-						print ("Inscription impossible")
+							hash_mdp = s.recv(64).decode()
+							f = open('passwordInf.txt','a')
+							f.write(hash_mdp+";")
+							tout=False
+							print("Fin enregistrement")
+						
+						else:
+							clé="Pas la bonne clé pour le service Infirmier"
+							s.send(clé.encode())					
+							print ("Inscription impossible")
 
-				elif service == 'Interne' :
-					service1="okInt"
-					s.send(service1.encode())
+					elif service == 'Interne' :
+						service1="okInt"
+						s.send(service1.encode())
 
-					saisie=s.recv(32).decode()
-					if saisie == cleInt:
-						clé="okCle"
-						s.send(clé.encode())
+						saisie=s.recv(32).decode()
+						if saisie == cleInt:
+							clé="okCle"
+							s.send(clé.encode())
 
-						invalide=True
-						while invalide :
-							nom=s.recv(24).decode()
-							if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 1:
-								f = open('passwordMed.txt','a')
-								f.write(nom+":")
-								oknom="okNom"
-								invalide = False
-							else :
-								oknom="nop"
-								s.send(oknom.encode())
+							invalide=True
+							while invalide :
+								nom=s.recv(24).decode()
+								if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 1:
+									f = open('passwordMed.txt','a')
+									f.write(nom+":")
+									oknom="okNom"
+									invalide = False
+								else :
+									oknom="nop"
+									s.send(oknom.encode())
 
-						s.send(oknom.encode())
+							s.send(oknom.encode())
 
-						hash_mdp = s.recv(64).decode()
-						f = open('passwordInt.txt','a')
-						f.write(hash_mdp+";")
-						tout=False
-						print("Fin enregistrement")
+							hash_mdp = s.recv(64).decode()
+							f = open('passwordInt.txt','a')
+							f.write(hash_mdp+";")
+							tout=False
+							print("Fin enregistrement")
 
-					
-					else:
-						clé="Pas la bonne clé pour le service Interne."
-						print ("Inscription impossible")
+						
+						else:
+							clé="Pas la bonne clé pour le service Interne."
+							print ("Inscription impossible")
+
+					else :
+						service_erreur="Ce service n'existe pas"
+						s.send(service_erreur.encode())
+						print ("Ce service n'existe pas.")
 
 				else :
-					service_erreur="Ce service n'existe pas"
-					s.send(service_erreur.encode())
-					print ("Ce service n'existe pas.")
-
-			else :
-				choix1="Ce choix n'est pas possible"
-				s.send(choix1.encode())
-				print ("Ce n'est pas un bon choix")
+					choix1="Ce choix n'est pas possible"
+					s.send(choix1.encode())
+					print ("Ce n'est pas un bon choix")
 
 	else :
 		user1="Commande inconnue"
