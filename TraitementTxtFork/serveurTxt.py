@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import socket,sys,os
+from gestionErr.py import *
 from getpass import getpass
 import hashlib
 
@@ -79,13 +80,17 @@ def LOGIN(conn):
 		
 				for i in range(len(l)):
 					if user == l[i][0]:
-						conn.send(b"1")
-						session = False
-						tout = False
 						print ( "j'ai trouvé",user)
+						if verifBlacklist(user) == 1:
+							conn.send(b"1")
+							session = False
+							tout = False
+						else:
+							print(user," BLACKLISTÉ","rdv administration")
+						
 				if session == True:
 					conn.send(b"0")
-					print ( "je n'ai pas trouvé",user)	
+					print ( "je n'ai pas trouvé ou blacklisté",useSr)	
 			
 		while verrouille and tout == False :
 
@@ -102,6 +107,8 @@ def LOGIN(conn):
 				tout = True
 				metier=True
 				session=True
+				print ("User ",user," Blacklisté")
+				failPassword(user)
 				break
 			else:
 				saisie = conn.recv(30)
