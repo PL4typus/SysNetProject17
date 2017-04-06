@@ -10,12 +10,14 @@ def lecture_fichier(fichier) :
 	l = fo.split(';') 
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
+    f.close()
 	return l
 
 def rights(conn_client,Droit,user):
     PATH_INF="../../Authentification/passwordInf.txt"
     PATH_INT="../../Authentification/passwordInt.txt"
     PATH_MED="../../Authentification/passwordMed.txt"
+    PATH_DROITS="fichier_droits"
     tab_droits={}
     ans=" "
     adoube=" "
@@ -52,8 +54,14 @@ def rights(conn_client,Droit,user):
                             fich= conn_client.recv().decode()
                             if fich!="§":
                                 fich=fich.rsplit(" ")
-                                tab_droits[fich[0]]=fiche[1]
-                        				
+                                tab_droits[fich[0]]=fich[1]
+                        f=open(PATH_DROITS+"_"+adoube,"r")
+                        fich=f.read()
+                        f.close()
+                        fich=fich.rsplit(" ")
+                        for i in tab_droits[]:
+                            if i == 
+                        
 			if ans in {"R","r"}:
 				
 			if ans in {"Q","q"}:
