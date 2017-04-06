@@ -28,29 +28,32 @@ def PlsrLignes ():
 			a = a + "\n"+str(b)
 	return a
 
+while saisie!= "exit":
+	print("=====================================================================================")
+	print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
+	print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
 print("=====================================================================================")
 print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hôpital>>>>>>>>>>>>>>>>>>>>>>>>")
 print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
-while saisie!= "exit":
 	service=True
 	session=True
 	tout=True
 	verrouille=True
 
 	saisie=input(">> ")
-	
+
 	#if saisie == "signup":
 	if saisie == "login":
-		
+
 		while tout:
 			user=''
 			while service:
 				saisie=input("Quel service? (Medecin, Infirmier, Interne)")
 				saisie=saisie.encode()
 				s.send(saisie)
-		
+
 				data=s.recv(10)
 				data=data.decode()
 				print (data)
@@ -64,7 +67,7 @@ while saisie!= "exit":
 					print("Vous etes un Interne")
 					service=False
 				else:
-	
+
 					print("Service inconnu")
 
 			while session and user != 'retour':
@@ -72,11 +75,11 @@ while saisie!= "exit":
 				user=input("Utilisateur: ")
 				user=user.encode()
 				s.send(user)
-		
+
 				data2=s.recv(30)
-				data2=data2.decode()	
+				data2=data2.decode()
 				print(data2)
-				
+
 				if data2 == "1":
 					session=False
 					tout = False
@@ -92,7 +95,7 @@ while saisie!= "exit":
 				Timeline=s.recv(30)
 				Timeline=Timeline.decode()
 				print(Timeline)
-				
+
 				if  Timeline == "Reste 0 essai":
 					print("Plus d'essai disponible")
 					break
@@ -100,7 +103,7 @@ while saisie!= "exit":
 					saisie=getpass("Mot de passe: ")
 					saisie=saisie.encode()
 					s.send(saisie)
-				
+
 				verif=s.recv(10)
 				verif=verif.decode()
 				print (verif)
@@ -138,7 +141,7 @@ while saisie!= "exit":
 					else :
 						print (rep)
 						print ("Erreur le fichier ", l[1], " n'existe pas\n")
-    
+
 			elif l[0]=="creer" :
 				if len(l) < 2 :
 					print ("Erreur : argument manquant")
@@ -181,13 +184,29 @@ while saisie!= "exit":
 						s.send(err.encode())
 					print("Fin de la saisie")
 
+			elif l[0]=="signer":
+				s.send(cmd.encode())
+				erreur="ERR"
+				repDoc=s.recv(BUFFER_SIZE)
+				repDoc=repDoc.decode()
+				print(user)
+				s.send(user)
+				print("Vous pouvez signer les documents suivants:\n")
+				print (repDoc)
+				doc=input("Quel document voulez vous signer?\n>>")
+				if doc not in repDoc:
+					print("Le document n'existe pas")
+					s.send(erreur.encode())
+				else:
+					s.send(doc.encode())
+
+
+
 			elif l[0] == "1" :
 				break
 			else :
 				s.send(cmd.encode())
 				rep=s.recv(BUFFER_SIZE)
 				print (rep.decode())
-
-
 
 

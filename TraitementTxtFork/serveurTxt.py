@@ -22,7 +22,7 @@ def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
 	fo=fo.rstrip()
-	l = fo.split(';') 
+	l = fo.split(';')
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
 	return l
@@ -35,14 +35,14 @@ def LOGIN(conn):
 	session = True
 	metier = True
 	verrouille = True
-	
-	
+
+
 
 	while tout :
 		user = ''
 		time=4
 		while metier:
-			
+
 			service=conn.recv(30)
 			service=service.decode()
 			print (service)
@@ -55,7 +55,7 @@ def LOGIN(conn):
 				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
 				metier = False
-				conn.send(b"2")	
+				conn.send(b"2")
 			elif service == "Interne":
 				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
@@ -63,7 +63,7 @@ def LOGIN(conn):
 				conn.send(b"3")
 			else:
 				conn.send(b"0")
-			
+
 		while session and user != 'retour':
 
 			user= conn.recv(20)
@@ -76,7 +76,7 @@ def LOGIN(conn):
 				print ("Boucle retour")
 				break
 			else :
-		
+
 				for i in range(len(l)):
 					if user == l[i][0]:
 						conn.send(b"1")
@@ -85,8 +85,8 @@ def LOGIN(conn):
 						print ( "j'ai trouvé",user)
 				if session == True:
 					conn.send(b"0")
-					print ( "je n'ai pas trouvé",user)	
-			
+					print ( "je n'ai pas trouvé",user)
+
 		while verrouille and tout == False :
 
 			verif=conn.recv(20)
@@ -95,7 +95,7 @@ def LOGIN(conn):
 			Timeline="Reste "+str(time)+" essai"
 			Timeline=Timeline.encode()
 			conn.send(Timeline)
-			
+
 			if time == 0:
 				#s.send(b"0")
 				print("plus d'essai")
@@ -108,7 +108,7 @@ def LOGIN(conn):
 				saisie=saisie.decode()
 				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
 
-			
+
 				for i in range(len(l)):
 					if user == l[i][0]:
 						if hash_mdp == l[i][1]:
@@ -120,7 +120,7 @@ def LOGIN(conn):
 	return DROIT
 
 def command_checker(command, status,conn, ip, port, dossier):
-	
+
 	command = command.split(' ')
 	buf=os.popen("ls "+dossier)
 	buf= buf.read()
@@ -144,7 +144,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 			else:
 				reponse = "Etes-vous sûr(e) de vouloir supprimer le fichier "+command[1] +"?   O/N ? \t Il ne sera pas recuperable."
 				ok = False
-				while ok == False:				
+				while ok == False:
 					conn.send(reponse.encode())
 					data=conn.recv(2048).decode()
 					if data in {"yes","oui","o","ouais","y","O","YES","Y","OUI","OUAIS"}:
@@ -168,9 +168,9 @@ def command_checker(command, status,conn, ip, port, dossier):
 		else:#modifier avec login()
 			reponse="Vous n'avez pas l'autorisation de supprimer des fichiers!"
 			conn.send(reponse.encode())
-		
+
 	elif command[0] == "cd":
-		bufdos=os.popen("cd "+dossier+";ls -d */") 
+		bufdos=os.popen("cd "+dossier+";ls -d */")
 		bufdos=bufdos.read()+".."
 		print (bufdos)
 		if len(command)<2:
@@ -203,13 +203,47 @@ def command_checker(command, status,conn, ip, port, dossier):
 						i = i+1
 					reponse = "Nouveau repertoire courant : "+dossier
 					conn.send(reponse.encode())
-	elif command[0] == "edit": #nom du fichier
+	elif command[0] == "cp" :
+		if len(command)<3:
+			r="Erreur: argument manquant"
+			conn.send(r.encode())
+		else :
+			
+			if dossier == "user" and command[2] ==".." :
+				r = "Vous n'avez pas l'autorisation de faire cela"
+				conn.send(r.encode())
+			else :
+				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
+				rep = "Commande cp effectuée\n"+rep.read()
+				conn.send(rep.encode())
+			
 		
+	elif command[0] == "edit": #nom du fichier
+
 		EDIT(conn, command[1],dossier)
 
 	elif command[0] == "creer": #nom du fichier
-	
+
 		CREER(conn,command[1],dossier)
+
+	elif command[0]== "signer":
+
+		repDoc=os.popen("ls user/")
+		repDoc=repDoc.read()
+		print ("RepDoc= \n",repDoc)
+		conn.send(repDoc.encode())
+
+		user=conn.recv(BUFFER_SIZE)
+		user=user.decode()
+		doc=conn.recv(BUFFER_SIZE)
+		doc=doc.decode()
+		
+		if doc != "ERR":
+			print("L'utilisateur",user,"souhaite signer",doc,".txt")
+			SIGNER(user,doc)
+		else:
+			print("Le document n'existe pas")
+
 	else :
 		reponse = "Commande inconnue"
 		conn.send(reponse.encode())
@@ -274,14 +308,16 @@ def CREER (conn, nomF,dos) :
 		f=open(nomF+"b",'w')
 		f.write("*".join(tabfich))#on écrit le fichier b
 		f.close()
-  				
 
+def SIGNER(user,doc):
+	print("Fonction SIGNER")
+	os.popen("python ../Signature\ electronique/signElec.py "+user+" "+doc)
 
 def barman(conn,ip,port,DROIT):
 	dossier = "user"
 	print("child process PID = ",os.getpid()," is client with ",ip," : ",port)
 	# reception de m ou i pour savoir si c'est un médecin ou autre, à remplacer quand on mattra l'authentifictaion
-	
+
 	while 1 :
 		data = conn.recv(BUFFER_SIZE)
 		data= data.decode()
@@ -300,7 +336,7 @@ def barman(conn,ip,port,DROIT):
 #				CREER(conn,l[1])
 #---------------------------------------------------------
 #			elif l[0] == "1":
-#				break 
+#				break
 #			else :
 #				rep = os.popen("cd user/;"+data+" 2>&1")
 #				reponse="reponse: \n"+rep.read()
@@ -314,6 +350,6 @@ while True:
 		DROIT = LOGIN(conn)
 		print ("droit ",DROIT)
 		barman(conn,ip,port,DROIT)
-	
+
 
 s.close()
