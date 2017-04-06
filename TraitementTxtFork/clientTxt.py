@@ -114,7 +114,7 @@ while saisie!= "exit":
 			l = cmd.split(" ")
 			if l[0]== "edit" :
 				if len(l) < 2 :
-					print ("Erreur : argument manquant")
+					print ("Erreur : argument manquant\nuse : edit nomfichier")
 				else :
 					s.send(cmd.encode())
 					print ("Voici l'affichage du fichier que vous voulez editer :\n")
@@ -141,7 +141,7 @@ while saisie!= "exit":
 
 			elif l[0]=="creer" :
 				if len(l) < 2 :
-					print ("Erreur : argument manquant")
+					print ("Erreur : argument manquant\nuse : creer nomfichier")
 				else :
 					s.send(cmd.encode())
 					rep = s.recv(BUFFER_SIZE)
@@ -197,7 +197,18 @@ while saisie!= "exit":
 				else:
 					s.send(doc.encode())
 
-
+			elif l[0]=="help":
+				print("Voici les commandes :\n")
+				print("ls :		affiche tous les fichiers du repertoire où vous vous trouvez)")
+				print("cat :		affiche le fichier passé en paramètre (use : cat nomFichier)")
+				print("rm :		efface le fichier passé en paramètre (use : rm nomFichier)")
+				print("mkdir :		créé un dossier (use : mkdir nomdossier)")
+				print("cd :		déplacement dans le dossier, mettre .. pour revenir au dossier parent (use : cd nomdossier ou cd ..)")
+				print("cp:		copie un fichier dans un dossier (use : cp nomfichier nomdossier)")
+				print("creer :		créé un fichier (use : creer nomfichier)")
+				print("edit :		édite un fichier (use : edit nomfichier)")
+				print("signer :	signe un fichier ")
+				
 
 			elif l[0] == "1" :
 				break
