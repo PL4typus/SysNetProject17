@@ -23,7 +23,7 @@ def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
 	fo=fo.rstrip()
-	l = fo.split(';') 
+	l = fo.split(';')
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
 	return l
@@ -36,14 +36,14 @@ def LOGIN(conn):
 	session = True
 	metier = True
 	verrouille = True
-	
-	
+
+
 
 	while tout :
 		user = ''
 		time=4
 		while metier:
-			
+
 			service=conn.recv(30)
 			service=service.decode()
 			print (service)
@@ -56,7 +56,7 @@ def LOGIN(conn):
 				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
 				metier = False
-				conn.send(b"2")	
+				conn.send(b"2")
 			elif service == "Interne":
 				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
@@ -64,7 +64,7 @@ def LOGIN(conn):
 				conn.send(b"3")
 			else:
 				conn.send(b"0")
-			
+
 		while session and user != 'retour':
 
 			user= conn.recv(20)
@@ -77,7 +77,7 @@ def LOGIN(conn):
 				print ("Boucle retour")
 				break
 			else :
-		
+
 				for i in range(len(l)):
 					if user == l[i][0]:
 						print ( "j'ai trouvé",user)
@@ -89,7 +89,7 @@ def LOGIN(conn):
 							print(user," BLACKLISTÉ","rdv administration")
 						
 				if session == True:
-					conn.send(b"0")
+
 					print ( "je n'ai pas trouvé ou blacklisté",useSr)	
 			
 		while verrouille and tout == False :
@@ -100,7 +100,7 @@ def LOGIN(conn):
 			Timeline="Reste "+str(time)+" essai"
 			Timeline=Timeline.encode()
 			conn.send(Timeline)
-			
+
 			if time == 0:
 				#s.send(b"0")
 				print("plus d'essai")
@@ -115,7 +115,7 @@ def LOGIN(conn):
 				saisie=saisie.decode()
 				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
 
-			
+
 				for i in range(len(l)):
 					if user == l[i][0]:
 						if hash_mdp == l[i][1]:
@@ -126,21 +126,21 @@ def LOGIN(conn):
 
 	return DROIT
 
-def command_checker(command, status,conn, ip, port):
+def command_checker(command, status,conn, ip, port, dossier):
 
 	command = command.split(' ')
-	buf=os.popen("ls user")
+	buf=os.popen("ls "+dossier)
 	buf= buf.read()
 
 	if command[0] == "ls":#modifier options
-		rep=os.popen("ls user -go")
+		rep=os.popen("ls "+dossier+" -go 2>&1")
 		reponse =rep.read()
 		conn.send(reponse.encode())
 	elif command[0] == "cat":
 		if command[1] not in buf:
 			reponse = "Vous n'avez pas l'autorisation de faire ça, ou le fichier demandé n'existe pas!\n"
 		else:
-			cccp="cat user/"+command[1]
+			cccp="cat "+dossier+"/"+command[1]
 			rep=os.popen(cccp)
 			reponse=rep.read()
 		conn.send(reponse.encode())
@@ -151,11 +151,11 @@ def command_checker(command, status,conn, ip, port):
 			else:
 				reponse = "Etes-vous sûr(e) de vouloir supprimer le fichier "+command[1] +"?   O/N ? \t Il ne sera pas recuperable."
 				ok = False
-				while ok == False:				
+				while ok == False:
 					conn.send(reponse.encode())
 					data=conn.recv(2048).decode()
 					if data in {"yes","oui","o","ouais","y","O","YES","Y","OUI","OUAIS"}:
-						cccp="rm -vf user/"+command[1]
+						cccp="rm -vf "+dossier+"/"+command[1]
 						print(cccp)
 						rep=os.popen(cccp)
 						reponse=rep.read()
@@ -168,18 +168,99 @@ def command_checker(command, status,conn, ip, port):
 		conn.send(reponse.encode())
 
 	elif command[0] == "mkdir":
-		#wip
-		print("lol")
-	elif command[0] == "edit": #nom du fichier
-		#wip
-		EDIT(conn, command[1])
-	elif command[0] == "creer": #nom du fichier
-		#wip
-		CREER(conn,command[1])
+		if status == "M":
+			os.popen("mkdir "+dossier+"/"+command[1])
+			r= "repertoire "+command[1]+" créé"
+			conn.send(r.encode())
+		else:#modifier avec login()
+			reponse="Vous n'avez pas l'autorisation de supprimer des fichiers!"
+			conn.send(reponse.encode())
 
-def EDIT (conn, nomF):
-	r = os.popen("cd user/;cat "+nomF+" 2>&1")
-	err = os.popen("cd user/;cat "+nomF+" 1>&2;echo $?");#pour voir si le fichier existe
+	elif command[0] == "cd":
+		bufdos=os.popen("cd "+dossier+";ls -d */")
+		bufdos=bufdos.read()+".."
+		print (bufdos)
+		if len(command)<2:
+			r="Erreur: argument manquant"
+			conn.send(r.encode())
+		else :
+			if (dossier == "user" and command[1] == ".."):
+
+				reponse="Vous n'avez pas l'autorisation de remonter au dessus de ce repertoir"
+				conn.send(reponse.encode())
+			else :
+				if command[1] not in bufdos :
+					reponse = "Vous n'avez pas l'autorisation de faire ça, ou le fichier demandé n'existe pas!\n"
+					conn.send(reponse.encode())
+				else :
+					print ("commande faite : cd "+dossier+";cd "+command[1]+";echo $PWD")
+					r=os.popen("cd "+dossier+";cd "+command[1]+";echo $PWD")
+					r=r.read()
+					print ("réponse : "+r)
+					r= r.split("/")
+					r[len(r)-1]=r[len(r)-1].strip()#met automatiquement un retour a la ligne à la fin donc on l'enlève
+					i=0
+					b=0
+					while(i<len(r)) :#boucle pour avoir le chemin que à partir de user
+						if b == 1:
+							dossier = dossier+"/"+r[i]
+						if r[i] == "user" :
+							dossier="user"
+							b=1
+						i = i+1
+					reponse = "Nouveau repertoire courant : "+dossier
+					conn.send(reponse.encode())
+	elif command[0] == "cp" :
+		if len(command)<3:
+			r="Erreur: argument manquant"
+			conn.send(r.encode())
+		else :
+			
+			if dossier == "user" and command[2] ==".." :
+				r = "Vous n'avez pas l'autorisation de faire cela"
+				conn.send(r.encode())
+			else :
+				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
+				rep = "Commande cp effectuée\n"+rep.read()
+				conn.send(rep.encode())
+			
+		
+	elif command[0] == "edit": #nom du fichier
+
+		EDIT(conn, command[1],dossier)
+
+	elif command[0] == "creer": #nom du fichier
+
+		CREER(conn,command[1],dossier)
+
+	elif command[0]== "signer":
+
+		repDoc=os.popen("ls user/")
+		repDoc=repDoc.read()
+		print ("RepDoc= \n",repDoc)
+		conn.send(repDoc.encode())
+
+		user=conn.recv(BUFFER_SIZE)
+		user=user.decode()
+		doc=conn.recv(BUFFER_SIZE)
+		doc=doc.decode()
+		
+		if doc != "ERR":
+			print("L'utilisateur",user,"souhaite signer",doc,".txt")
+			SIGNER(user,doc)
+		else:
+			print("Le document n'existe pas")
+
+	else :
+		reponse = "Commande inconnue"
+		conn.send(reponse.encode())
+
+
+	return dossier
+
+def EDIT (conn, nomF,dos):
+	r = os.popen("cd "+dos+";cat "+nomF+" 2>&1")
+	err = os.popen("cd "+dos+";cat "+nomF+" 1>&2;echo $?");#pour voir si le fichier existe
 	err= err.read()[0]
 	print ("\nerr :", err)
 	if err == "0" : #si le fichier existe
@@ -193,23 +274,25 @@ def EDIT (conn, nomF):
 		f.close()
 		tabfich = fiche.split("*")
 		tabfich[int(num)]= edit
-		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n\n(3)Allergies: "+tabfich[3]+"\n\n(4)Symptomes: " +tabfich[4]+"\n\n(5)Diagnostique: "+tabfich[5]+"\n\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]+"\n"
 		f=open(nomF,'w')
 		f.write(texte)
 		f.close()
-		os.popen("mv "+nomF+" user/");#on écrit le fichier que l'utilisateur voit et on le met dans user/
+		os.popen("mv "+nomF+" "+dos);#on écrit le fichier que l'utilisateur voit et on le met dans user/
 		f=open(nomF+"b",'w')
 		f.write("*".join(tabfich))#on écrit le fichier b
 		f.close()
-		r2 = os.popen("cd user/;cat "+nomF)
+		r2 = os.popen("cd "+dos+";cat "+nomF)
 		conn.send((r2.read()).encode())#on renvoi l'affichage du fichier modifié
 	else :#si le fichier existe pas
 		sr = "1"
 		conn.send(sr.encode())
 
 
-def CREER (conn, nomF) :
-	err = os.popen("cd user/;cat "+nomF+" 1>&2;echo $?");
+def CREER (conn, nomF,dos) :
+	print ("creer")
+	print("cd "+dos+";cat "+nomF+" 1>&2;echo $?")
+	err = os.popen("cd "+dos+";cat "+nomF+" 1>&2;echo $?")
 	err = err.read()[0]
 	conn.send(err.encode())#on envoie la retour de cat, si c'est 0 ça veut dire qu'un fichier du même nom existe et on va demander à l'utilisateur s'il veut l'écraser ou pas
 	i=1
@@ -224,31 +307,33 @@ def CREER (conn, nomF) :
 			tabfich[i]= donne.decode()+" "
 			i = i+1
 		print (tabfich)
-		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n(3)Allergies: "+tabfich[3]+"\n(4)Symptomes: " +tabfich[4]+"\n(5)Diagnostique: "+tabfich[5]+"\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]
+		texte = "(0)Nom: "+tabfich[0]+" (1)Prénom: "+tabfich[1]+" (2)Age: "+tabfich[2]+"\n\n(3)Allergies: "+tabfich[3]+"\n\n(4)Symptomes: " +tabfich[4]+"\n\n(5)Diagnostique: "+tabfich[5]+"\n\n(6)Commentaire: "+tabfich[6]+"\n\n(7)Date d'entrée à l'hôpital : "+tabfich[7]+"\n"
 		f=open(nomF,'w')
 		f.write(texte)
 		f.close()
-		os.popen("mv "+nomF+" user/");#on ecrit le fichier utilisateur dans user/
+		os.popen("mv "+nomF+" "+dos);#on ecrit le fichier utilisateur dans user/
 		f=open(nomF+"b",'w')
 		f.write("*".join(tabfich))#on écrit le fichier b
 		f.close()
-  				
 
+def SIGNER(user,doc):
+	print("Fonction SIGNER")
+	os.popen("python ../Signature\ electronique/signElec.py "+user+" "+doc)
 
 def barman(conn,ip,port,DROIT):
+	dossier = "user"
 	print("child process PID = ",os.getpid()," is client with ",ip," : ",port)
 	# reception de m ou i pour savoir si c'est un médecin ou autre, à remplacer quand on mattra l'authentifictaion
-	
+
 	while 1 :
 		data = conn.recv(BUFFER_SIZE)
 		data= data.decode()
-		print (DROIT)
 		if DROIT == "M" : # attribution des droit
 			os.popen("cd user/;chmod +w $PWD")
 		else :
 			os.popen("cd user/;chmod -w $PWD")
 		print (data)
-		command_checker(data,DROIT,conn,ip, port)
+		dossier = command_checker(data,DROIT,conn,ip, port,dossier)
 #----------------------------------------------
 #			if l[0]== "edit" and droit == "m": #pour editer un texte seul les medecins peuvent
 #				EDIT(conn,l[1])
@@ -258,7 +343,7 @@ def barman(conn,ip,port,DROIT):
 #				CREER(conn,l[1])
 #---------------------------------------------------------
 #			elif l[0] == "1":
-#				break 
+#				break
 #			else :
 #				rep = os.popen("cd user/;"+data+" 2>&1")
 #				reponse="reponse: \n"+rep.read()
@@ -272,6 +357,6 @@ while True:
 		DROIT = LOGIN(conn)
 		print ("droit ",DROIT)
 		barman(conn,ip,port,DROIT)
-	
+
 
 s.close()
