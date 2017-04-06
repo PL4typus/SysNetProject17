@@ -33,9 +33,6 @@ while saisie!= "exit":
 	print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
 	print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
-print("=====================================================================================")
-print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hôpital>>>>>>>>>>>>>>>>>>>>>>>>")
-print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
 	service=True
 	session=True
