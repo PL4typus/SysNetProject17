@@ -12,7 +12,15 @@ def lecture_fichier(fichier) :
 		l[i] = l[i].split(':')
 	return l
 
-def rights(Droit,user):
+def rights(conn_client,Droit,user):
+    PATH_INF="../../Authentification/passwordInf.txt"
+    PATH_INT="../../Authentification/passwordInt.txt"
+    PATH_MED="../../Authentification/passwordMed.txt"
+    tab_droits={}
+    ans=" "
+    adoube=" "
+    fich=" "
+    
 	if Droit=="M":
 		while True:
 			print("Voulez vous ajouter des droits ou en retirer ?  ")
@@ -26,6 +34,23 @@ def rights(Droit,user):
 				if ans in {"Inf","INF"}:
 					print("Quelle personne ?")
 					
+					l=lecture_fichier(PATH_INF)
+					for x in l[i][0]:
+						print(x)
+                    adoube=" "
+                    while (adoube not in l[i][0]) or (adoube not in {"q","Q"}):    
+                        print("Veuillez choisir quelqu'un dans la liste ou Q pour quitter")
+                        adoube=input(">>>")
+                    if adoube not in {"q","Q"}:
+                        print("entrez un nom de fichier ou repertoire suivi de r pour lecture ou r/w pour ecriture")
+                        print("Exemple : pour authoriser ", adoube," à modifier le fichier fiche_michu, écrire:\"fiche_michu w\"")
+                        print("Pour authoriser les droits de lecture et d'écriture, sur deux fichiers écrire:\"fiche_michu w\" puis taper [entrée] et écrivez un autre fichier. Pour terminer,entrer \"§\" ")
+                        print("Vous avez choisi ",adoube,", quels droits voulez vous lui rajouter ?")
+                        while ans != "§":
+                            fich=input(">>>>")
+                            
+                            tab_droits[
+                        
 				
 			if ans in {"R","r"}:
 				
