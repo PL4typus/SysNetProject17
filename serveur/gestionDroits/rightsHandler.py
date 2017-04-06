@@ -25,6 +25,7 @@ def rights(Droit,user):
 					ans = input("\t>")
 				if ans in {"Inf","INF"}:
 					print("Quelle personne ?")
+                
 					
 				
 			if ans in {"R","r"}:

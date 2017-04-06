@@ -30,7 +30,7 @@ def PlsrLignes ():
 
 
 print("=====================================================================================")
-print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
+print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hôpital>>>>>>>>>>>>>>>>>>>>>>>>")
 print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
 while saisie!= "exit":
@@ -173,7 +173,7 @@ while saisie!= "exit":
 						com = PlsrLignes()
 						s.send(com.encode())
 
-						hop=input("Saisie de la date d'entrée à l'hôpitale: ")
+						hop=input("Saisie de la date d'entrée à l'hôpital: ")
 						hop=str(hop)+" "
 						s.send(hop.encode())
 					else :
