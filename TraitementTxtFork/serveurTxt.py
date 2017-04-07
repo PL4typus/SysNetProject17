@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import socket,sys,os
-from gestionErr.py import *
+#from gestionErr.py import *
 from getpass import getpass
 import hashlib
 
@@ -19,15 +19,17 @@ s.bind((TCP_IP,TCP_PORT))
 
 ############################################################################################
 ## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
-def lecture_fichier(fichier) :
+
+def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
-	fo = f.read(1024)
-	fo=fo.rstrip()
-	l = fo.split(';')
+	fo = f.read(2048)
+	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
+	f.close()
 	return l
 
+print(lecture_fichier("passwordMed.txt"))
 
 ###########################################################################################
 
@@ -360,3 +362,5 @@ while True:
 
 
 s.close()
+
+
