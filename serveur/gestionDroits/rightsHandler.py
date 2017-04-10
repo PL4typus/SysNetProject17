@@ -7,7 +7,7 @@ def lecture_fichier(fichier) :
 	f = open(fichier,'r')
 	fo = f.read(1024)
 	fo=fo.rstrip()
-	l = fo.split(';') 
+	l = fo.split(';')
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
     f.close()
@@ -22,7 +22,7 @@ def rights(conn_client,Droit,user):
     ans=" "
     adoube=" "
     fich=" "
-    
+
 	if Droit=="M":
 		while True:
 			print("Voulez vous ajouter des droits ou en retirer ?  ")
@@ -36,12 +36,12 @@ def rights(conn_client,Droit,user):
 
 				if ans in {"Inf","INF"}:
 					print("Quelle personne ?")
-					
+
 					l=lecture_fichier(PATH_INF)
 					for x in l[i][0]:
 						print(x)
-                  
-                    while (adoube not in l[i][0]) or (adoube not in {"q","Q"}):    
+
+                    while (adoube not in l[i][0]) or (adoube not in {"q","Q"}):
                         print("Veuillez choisir quelqu'un dans la liste ou Q pour quitter")
                         adoube=conn_client.recv().decode()
 
@@ -60,17 +60,17 @@ def rights(conn_client,Droit,user):
                         f.close()
                         fich=fich.rsplit(" ")
                         for i in tab_droits[]:
-                            if i == 
-                        
+                            if i ==
+
 			if ans in {"R","r"}:
-				
+
 			if ans in {"Q","q"}:
 				break
-	
+
 	else:
 		print("Vous n'avez pas l'autorisation de faire ça. Cet incident va être enregistré.")
 		date=time.localtime()
 		f=open("reports.log","a")
 		report="user "+loginName+" a essayé de changer ses droits le "+ date.tm_mday+"/"+date.tm_mon+"/"+date.tm_year+" à "+date.tm_hour+":"+date.tm_min+":"+date.tm_sec+" .\n"
-		
-		
+
+
