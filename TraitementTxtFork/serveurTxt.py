@@ -51,7 +51,7 @@ def verifBlacklist(nom):
 	lecture=f.read(1024)
 	lecture=lecture.rstrip()
 	bl=lecture.split(";")
-	
+
 	if nom in bl:
 		return 0
 	else:
@@ -119,11 +119,10 @@ def LOGIN(conn):
 							tout = False
 						else:
 							print(user," BLACKLISTÉ","rdv administration")
-						
+
 				if session == True:
 					conn.send(b"0")
-					print ( "je n'ai pas trouvé ou blacklisté",user)	
-			
+					print ( "je n'ai pas trouvé ou blacklisté",user)
 		while verrouille and tout == False :
 
 			verif=conn.recv(20)
@@ -247,7 +246,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 			r="Erreur: argument manquant"
 			conn.send(r.encode())
 		else :
-			
+
 			if dossier == "user" and command[2] ==".." :
 				r = "Vous n'avez pas l'autorisation de faire cela"
 				conn.send(r.encode())
@@ -255,11 +254,49 @@ def command_checker(command, status,conn, ip, port, dossier):
 				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
 				rep = "Commande cp effectuée\n"+rep.read()
 				conn.send(rep.encode())
-			
-		
+
+
 	elif command[0] == "edit": #nom du fichier
 
 		EDIT(conn, command[1],dossier)
+	elif command[0] == "whereis": #nom du fichier
+		if len(command)<2:
+			r="Erreur: argument manquant"
+			conn.send(r.encode())
+		else:
+			lsR = os.popen("cd user;ls -R")
+			lsR = lsR.read()
+			lsR = lsR.splitlines()
+			Clef = ""
+			tabVal = []
+			dico = {}
+			i=0	
+			while i < len(lsR) :
+				if ":" in lsR[i] :
+					if Clef != "":
+						print ("tabVal : ",tabVal)
+						dico[Clef] = str(tabVal)
+						tabVal[:]=[]
+					Clef = lsR[i]
+				else:
+					tabVal.append(lsR[i])
+				i=i+1
+		
+			dico[Clef] = str(tabVal)
+			tabVal[:]=[]
+			reponse="le fichier n'as pas été trouvé"
+			for Clef in dico.keys():
+				fichiers = dico.get(Clef)
+				print (fichiers)
+				if command[1] in fichiers :
+					Clef=Clef.replace(".","user")
+					Clef=Clef.replace(":","")
+					reponse="le fichier est dans "+Clef
+		
+			conn.send(reponse.encode())
+
+				
+			
 
 	elif command[0] == "creer": #nom du fichier
 
@@ -276,7 +313,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 		user=user.decode()
 		doc=conn.recv(BUFFER_SIZE)
 		doc=doc.decode()
-		
+
 		if doc != "ERR":
 			print("L'utilisateur",user,"souhaite signer",doc,".txt")
 			SIGNER(user,doc)

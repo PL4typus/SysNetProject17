@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#-*- coding: utf_8 -*-
 
 import socket
 import os
@@ -24,19 +25,15 @@ while msg_envoye != ("EXIT"):
 	print ("Que voulez vous faire?\n")
 	msg_envoye=input(">> ")
 	print(msg_envoye)
+	s.send(msg_envoye.encode())
 
-
-	if msg_envoye =="importer":
+	"""if msg_envoye =="importer":
 		
 		msg_envoye=msg_envoye.encode()
 		s.send(msg_envoye)
-
-		lsretour=s.recv(BUFFER_SIZE)
-
-		print("Vous pouvez importer les images suivante:\n",lsretour)
 		
 		#Chemin vers l'image
-		cheminImage = "RedPanda.jpg"
+		cheminImage = "image/RedPanda.jpg"
 		fichierImage = open(cheminImage, "rb")
 		 
 		#On récupère la taille du fichier image en octets que l'on convertit en chaine de caractères
@@ -51,24 +48,31 @@ while msg_envoye != ("EXIT"):
 		#On envoit le contenu du fichier
 		s.send(fichierImage.read())
 
-		print("Importation terminée")
+		print("Importation terminée")"""
 
-	elif msg_envoye == "telecharger":
+	if msg_envoye == "t":
 
 		print(msg_envoye,"2")
+		
+		
+		print ("Download...")
 
-		msg_envoye=msg_envoye.encode()
-		s.send(msg_envoye)
+		lsretour=s.recv(BUFFER_SIZE)
+		print("Image disponible:\n",lsretour.decode())
 
-		print("Download...")
-		#On récupère les 8 premier octets
+		
+		choix=input("Quel image?>>")
+		s.send(choix.encode())
+
+		cheminImage="imageDownload/"+choix+".jpg"
+		#On recupere les 8 premier octets
 		tailleImage = s.recv(8)
 		#On convertit la taille de l'image en entier (en octets)
 		tailleImage = int(tailleImage.decode())
 		#Contenu téléchargé en octets
 		contenuTelecharge = 0
 		#Le fichier qui va contenir l'image
-		fichierImage = open("imageTelecharger/RedPanda.jpg","wb")
+		fichierImage = open(cheminImage,"wb")
 		 
 		#On a la taille de l'image, jusqu'à ce qu'on ait tout téléchargé
 		while contenuTelecharge < tailleImage:
@@ -78,16 +82,19 @@ while msg_envoye != ("EXIT"):
 		    fichierImage.write(contenuRecu)
 		    #On ajoute la taille du contenu reçu au contenu téléchargé
 		    contenuTelecharge += len(contenuRecu)
-		    print(">",)
+		    print(">",end='')
 	 
 		fichierImage.close()
 
-		print("Telechargement terminée")
+		print("Telechargement terminee")
+
+	elif msg_envoye=="v":
+		print("Je vais visionner")
 
 	else:
 		print(msg_envoye,"3")
-		msg_envoye=msg_envoye.encode()
-		s.send(msg_envoye)
+		s.send(msg_envoye.encode())
+		
 
 print ("\n\t<<<<<<<<<<Deconnexion du serveur de test>>>>>>>>>>>>\n")
 print("----------------------------------------------------------------")
