@@ -19,17 +19,45 @@ s.bind((TCP_IP,TCP_PORT))
 
 ############################################################################################
 ## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
-
 def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
 	fo = f.read(2048)
 	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
+	l.pop()
 	f.close()
 	return l
 
-print(lecture_fichier("passwordMed.txt"))
+def verification_nom_utilistaeur(nom, fichier):
+	liste = lecture_fichier(fichier)
+	print(liste)
+	for e in liste :
+		print(e[0])
+		if e[0] == nom :
+			return 0
+	return 1
+
+## Fonction pour blacklister queqlu'un #######################
+def failPassword(nom):
+
+	f = open("blacklist.txt",'a')
+	f.write(nom+";")
+
+
+## Fonction pour verifier si une personne n'est pas dans la blackliste #####
+def verifBlacklist(nom):
+
+	f=open("blacklist.txt",'r')
+	lecture=f.read(1024)
+	lecture=lecture.rstrip()
+	bl=lecture.split(";")
+	
+	if nom in bl:
+		return 0
+	else:
+		return 1
+
 
 ###########################################################################################
 
@@ -362,5 +390,3 @@ while True:
 
 
 s.close()
-
-

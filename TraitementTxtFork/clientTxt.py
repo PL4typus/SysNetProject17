@@ -3,7 +3,7 @@
 
 
 import socket
-import gestionErr.py
+#from gestionErr.py import *
 from getpass import getpass
 
 

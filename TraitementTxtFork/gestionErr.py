@@ -23,3 +23,4 @@ def verifBlacklist(nom):
 #print (verifBlacklist("Paul"))
 #print (verifBlacklist("Emma"))
 #print (verifBlacklist("simon"))
+
