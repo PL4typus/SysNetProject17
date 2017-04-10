@@ -25,7 +25,6 @@ def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
-	l.pop()
 	f.close()
 	return l
 
@@ -52,7 +51,7 @@ def verifBlacklist(nom):
 	lecture=f.read(1024)
 	lecture=lecture.rstrip()
 	bl=lecture.split(";")
-	
+
 	if nom in bl:
 		return 0
 	else:
@@ -80,16 +79,19 @@ def LOGIN(conn):
 			if service == "Medecin":
 				DROIT="M"
 				l=lecture_fichier("passwordMed.txt")
+				print(l)
 				metier = False
 				conn.send(b"1")
 			elif service == "Infirmier":
 				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
+				print(l)
 				metier = False
 				conn.send(b"2")
 			elif service == "Interne":
 				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
+				print(l)
 				metier = False
 				conn.send(b"3")
 			else:
@@ -117,11 +119,10 @@ def LOGIN(conn):
 							tout = False
 						else:
 							print(user," BLACKLISTÉ","rdv administration")
-						
-				if session == True:
 
-					print ( "je n'ai pas trouvé ou blacklisté",useSr)	
-			
+				if session == True:
+					conn.send(b"0")
+					print ( "je n'ai pas trouvé ou blacklisté",user)
 		while verrouille and tout == False :
 
 			verif=conn.recv(20)
@@ -245,7 +246,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 			r="Erreur: argument manquant"
 			conn.send(r.encode())
 		else :
-			
+
 			if dossier == "user" and command[2] ==".." :
 				r = "Vous n'avez pas l'autorisation de faire cela"
 				conn.send(r.encode())
@@ -253,8 +254,8 @@ def command_checker(command, status,conn, ip, port, dossier):
 				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
 				rep = "Commande cp effectuée\n"+rep.read()
 				conn.send(rep.encode())
-			
-		
+
+
 	elif command[0] == "edit": #nom du fichier
 
 		EDIT(conn, command[1],dossier)
@@ -274,7 +275,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 		user=user.decode()
 		doc=conn.recv(BUFFER_SIZE)
 		doc=doc.decode()
-		
+
 		if doc != "ERR":
 			print("L'utilisateur",user,"souhaite signer",doc,".txt")
 			SIGNER(user,doc)
