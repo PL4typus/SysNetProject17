@@ -1,4 +1,4 @@
-#!/usr/bin/env python4.4
+#!/usr/bin/env python3.4
 #coding: utf8
 
 
