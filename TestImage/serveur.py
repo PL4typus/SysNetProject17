@@ -22,7 +22,13 @@ while 1:
 	data = conn.recv(BUFFER_SIZE)
 	data=data.decode()
 
-	if data == "importer":
+	ls=os.popen("ls image/")
+	ls=ls.read()
+	print(ls)
+	ls=ls.encode()
+	print(ls)
+
+	"""if data == "importer":
 		#On récupère les 8 premier octets
 		tailleImage = conn.recv(8)
 		#On convertit la taille de l'image en entier (en octets)
@@ -43,14 +49,18 @@ while 1:
 		    print(">", end='')
 	 
 		fichierImage.close()
+		print("Importation terminée")"""
 
-		print("Importation terminée")
+	if data == "t":
 
-	elif data == "telecharger":
-
+		conn.send(ls)
+		choix=conn.recv(BUFFER_SIZE);
+		choix=choix.decode()
+		print("Choix= ",choix)
 		print("Download...")
 		#Chemin vers l'image
-		cheminImage = "imageImporter/RedPanda.jpg"
+		cheminImage = "image/"+choix+".jpg"
+
 		fichierImage = open(cheminImage, "rb")
 		 
 		#On récupère la taille du fichier image en octets que l'on convertit en chaine de caractères
@@ -65,7 +75,18 @@ while 1:
 		#On envoit le contenu du fichier
 		conn.send(fichierImage.read())
 
-		print("Telechargement terminée")
+		print("Telechargement terminee")
+
+	elif data=="v":
+		print("Je vais visionner")
+
+		conn.send(ls)
+		choix=conn.recv(BUFFER_SIZE);
+		choix=choix.decode()
+		print("Choix= ",choix)
+
+		cheminImage = "image/"+choix+".jpg"
+		conn.send(os.popen("eog "+cheminImage))
 
 	else:
 		print ("received data:", data)
