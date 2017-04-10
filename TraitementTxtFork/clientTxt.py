@@ -223,7 +223,7 @@ while saisie!= "exit":
 
 			elif l[0]=="historique":
 				print (historique)
-				
+
 
 			elif l[0] == "1" :
 				historique = " "
