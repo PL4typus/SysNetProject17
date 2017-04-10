@@ -15,10 +15,15 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 s.bind((TCP_IP,TCP_PORT))
 
 
-
+mdpMed="azerty"
+Med="médecin"
+cleMed="bouteille"
+cleInf="livre"
+cleInt="portable"
 
 ############################################################################################
 ## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
+
 def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
 	fo = f.read(2048)
@@ -30,9 +35,7 @@ def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 
 def verification_nom_utilistaeur(nom, fichier):
 	liste = lecture_fichier(fichier)
-	print(liste)
 	for e in liste :
-		print(e[0])
 		if e[0] == nom :
 			return 0
 	return 1
@@ -71,91 +74,348 @@ def LOGIN(conn):
 	while tout :
 		user = ''
 		time=4
-		while metier:
+		decision=conn.recv(16).decode()
+		print(decision)
 
-			service=conn.recv(30)
-			service=service.decode()
-			print (service)
-			if service == "Medecin":
-				DROIT="M"
-				l=lecture_fichier("passwordMed.txt")
-				print(l)
-				metier = False
-				conn.send(b"1")
-			elif service == "Infirmier":
-				DROIT="INF"
-				l=lecture_fichier("passwordInf.txt")
-				print(l)
-				metier = False
-				conn.send(b"2")
-			elif service == "Interne":
-				DROIT="I"
-				l=lecture_fichier("passwordInt.txt")
-				print(l)
-				metier = False
-				conn.send(b"3")
-			else:
-				conn.send(b"0")
+		if decision=="login":
+			while metier:
 
-		while session and user != 'retour':
-
-			user= conn.recv(20)
-			user=user.decode()
-
-			print ("user",user)
-			if user == "retour" :
-				metier = True
-				conn.send(b"return")
-				print ("Boucle retour")
-				break
-			else :
-
-				for i in range(len(l)):
-					if user == l[i][0]:
-						print ( "j'ai trouvé",user)
-						if verifBlacklist(user) == 1:
-							conn.send(b"1")
-							session = False
-							tout = False
-						else:
-							print(user," BLACKLISTÉ","rdv administration")
-
-				if session == True:
+				service=conn.recv(30)
+				service=service.decode()
+				print (service)
+				if service == "Medecin":
+					DROIT="M"
+					l=lecture_fichier("passwordMed.txt")
+					print(l)
+					metier = False
+					conn.send(b"1")
+				elif service == "Infirmier":
+					DROIT="INF"
+					l=lecture_fichier("passwordInf.txt")
+					print(l)
+					metier = False
+					conn.send(b"2")
+				elif service == "Interne":
+					DROIT="I"
+					l=lecture_fichier("passwordInt.txt")
+					print(l)
+					metier = False
+					conn.send(b"3")
+				else:
 					conn.send(b"0")
-					print ( "je n'ai pas trouvé ou blacklisté",user)
-		while verrouille and tout == False :
 
-			verif=conn.recv(20)
-			print (verif.decode())
-			time-=1
-			Timeline="Reste "+str(time)+" essai"
-			Timeline=Timeline.encode()
-			conn.send(Timeline)
+			while session and user != 'retour':
 
-			if time == 0:
-				#s.send(b"0")
-				print("plus d'essai")
-				tout = True
-				metier=True
-				session=True
-				print ("User ",user," Blacklisté")
-				failPassword(user)
-				break
-			else:
-				saisie = conn.recv(30)
-				saisie=saisie.decode()
-				hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
+				user= conn.recv(20)
+				user=user.decode()
+
+				print ("user",user)
+				if user == "retour" :
+					metier = True
+					conn.send(b"return")
+					print ("Boucle retour")
+					break
+				else :
+
+					for i in range(len(l)):
+						if user == l[i][0]:
+							print ( "j'ai trouvé",user)
+							if verifBlacklist(user) == 1:
+								conn.send(b"1")
+								session = False
+								tout = False
+							else:
+								print(user," BLACKLISTÉ","rdv administration")
+
+					if session == True:
+						conn.send(b"0")
+						print ( "je n'ai pas trouvé ou blacklisté",user)
+			while verrouille and tout == False :
+
+				verif=conn.recv(20)
+				print (verif.decode())
+				time-=1
+				Timeline="Reste "+str(time)+" essai"
+				Timeline=Timeline.encode()
+				conn.send(Timeline)
+
+				if time == 0:
+					#s.send(b"0")
+					print("plus d'essai")
+					tout = True
+					metier=True
+					session=True
+					print ("User ",user," Blacklisté")
+					failPassword(user)
+					break
+				else:
+					saisie = conn.recv(30)
+					saisie=saisie.decode()
+					hash_mdp = hashlib.sha256(saisie.encode()).hexdigest()
 
 
-				for i in range(len(l)):
-					if user == l[i][0]:
-						if hash_mdp == l[i][1]:
-							verrouille=False
-							conn.send(b"1")
-						else:
-							conn.send(b"0")
+					for i in range(len(l)):
+						if user == l[i][0]:
+							if hash_mdp == l[i][1]:
+								verrouille=False
+								conn.send(b"1")
+							else:
+								conn.send(b"0")
+
+		elif decision=="admin":
+			DROIT="A"
+			print(decision)
+			user=conn.recv(30).decode()
+			print("l'utilisateur est : ", user)
+			if user == "admin" :
+				user1="admin"
+				conn.send(user1.encode())
+
+				tout=False
+				mdp_admin1 =''
+				while mdp_admin1 != 'correct' :
+					mdp_admin=conn.recv(64).decode()
+					print("le mot de passe hasher est :"+mdp_admin)
+
+					l=lecture_fichier("admin.txt")
+					print(l)
+					for e in l :
+						print(e)
+						print("mot de passe devrai etre : "+e[1])
+						if e[1]==mdp_admin:
+							print("mdp correct !")
+							mdp_admin1='correct'
+							conn.send(mdp_admin1.encode())
+							tout =True
+
+					if tout==False :
+						print("Mauvais mot de passe pour l'administrateur")
+						mdp_admin1='Faux'
+						conn.send(mdp_admin1.encode())
+
+				while tout :
+
+					choix=conn.recv(32).decode()
+					print(choix)
+
+					if choix=='fin' :
+						tout=False
+						break
+
+					elif choix == "signup" :
+						choix1 = "signup1"
+						print("go signup")
+						conn.send(choix1.encode())
+
+						service = conn.recv(32).decode()
+						print("Le service choisi est : ", service)
+
+						if service == 'Medecin' :
+							service1="okMed"
+							print("go signup Medecin")
+							conn.send(service1.encode())
+
+							saisie=conn.recv(32).decode()
+							if saisie == cleMed:
+								clé="okCle"
+								conn.send(clé.encode())
+
+								invalide=True
+								while invalide :
+									nom=conn.recv(24).decode()
+									if verification_nom_utilistaeur(nom, 'passwordMed.txt')== 1 :
+										f = open('passwordMed.txt','a')
+										f.write(nom+":")
+										oknom="okNom"
+										invalide = False
+									else :
+										oknom="nop"
+										conn.send(oknom.encode())
+
+
+								conn.send(oknom.encode())
+
+								hash_mdp = conn.recv(64).decode()
+								f = open('passwordMed.txt','a')
+								f.write(hash_mdp+"\n")
+								print("Fin enregistrement")
+
+							
+							else:
+								clé="Pas la bonne clé pour le service médecin"
+								conn.send(clé.encode())
+								print ("Cle errone, inscription impossible")
+						
+
+						elif service == 'Infirmier' :
+							service1="okInf"
+							conn.send(service1.encode())
+
+							saisie=conn.recv(32).decode()
+							if saisie == cleInf:
+								clé="okCle"
+								conn.send(clé.encode())
+
+								invalide=True
+								while invalide :
+									nom=conn.recv(24).decode()
+									if verification_nom_utilistaeur(nom, 'passwordInf.txt') == 1:
+										f = open('passwordInf.txt','a')
+										f.write(nom+":")
+										oknom="okNom"
+										invalide = False
+									else :
+										oknom="nop"
+										conn.send(oknom.encode())
+
+								conn.send(oknom.encode())
+
+								hash_mdp = conn.recv(64).decode()
+								f = open('passwordInf.txt','a')
+								f.write(hash_mdp+"\n")
+								print("Fin enregistrement")
+							
+							else:
+								clé="Pas la bonne clé pour le service Infirmier"
+								conn.send(clé.encode())					
+								print ("Inscription impossible")
+
+						elif service == 'Interne' :
+							service1="okInt"
+							conn.send(service1.encode())
+
+							saisie=conn.recv(32).decode()
+							if saisie == cleInt:
+								clé="okCle"
+								conn.send(clé.encode())
+
+								invalide=True
+								while invalide :
+									nom=conn.recv(24).decode()
+									if verification_nom_utilistaeur(nom, 'passwordInt.txt') == 1:
+										f = open('passwordInt.txt','a')
+										f.write(nom+":")
+										oknom="okNom"
+										invalide = False
+									else :
+										oknom="nop"
+										conn.send(oknom.encode())
+
+								conn.send(oknom.encode())
+
+								hash_mdp = conn.recv(64).decode()
+								f = open('passwordInt.txt','a')
+								f.write(hash_mdp+"\n")
+								print("Fin enregistrement")
+
+							
+							else:
+								clé="Pas la bonne clé pour le service Interne."
+								print ("Inscription impossible")
+
+						else :
+							service_erreur="Ce service n'existe pas"
+							conn.send(service_erreur.encode())
+							print ("Ce service n'existe pas.")
+
+					elif choix=="blacklist" :
+						choix1 = "blacklist"
+						print("go blacklist")
+						conn.send(choix1.encode())
+						black='go'
+						nom_blackliste=''
+
+						while black=='go' and nom_blackliste !='retour' :
+
+							nom_blackliste = conn.recv(32).decode()
+							print("L'utilisateur blacklisté est : ", nom_blackliste)
+							
+							if nom_blackliste == 'fin' :
+									a='stop'
+									print(a)
+									conn.send(a.encode())
+									nom_blackliste='retour'
+									black='stop'
+
+							else :
+								verifBlacklist(nom_blackliste)
+								if verifBlacklist(nom_blackliste) == 0 :
+									print("Utilisateur dans blacklist")
+									a='oui'
+									conn.send(a.encode())
+
+									delet=conn.recv(64).decode()
+									delet=delet.split(' ')
+									print(delet[0])
+									print(delet[1])
+
+									if delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==0 and delet[0]!='fin' :
+										a='okDelet'
+										conn.send(a.encode())
+										print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
+										b=conn.recv(16).decode()
+										print(b)
+
+										f=open("blacklist.txt",'r')
+										lecture=f.read(1024)
+										lecture=lecture.rstrip()
+										bl=lecture.split(";")
+										bl.pop()
+										print(bl)
+										bl.remove(delet[1])
+										print(bl)
+										f.close()
+
+										f=open("blacklist.txt",'w')
+										for e in bl:
+											f.write(e+";")
+										
+										a='Utilistateur enlevé de la Blacklist'
+										conn.send(a.encode())
+										f.close()
+										
+
+									elif delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==1 :
+										a="not In Blacklist"
+										conn.send(a.encode())
+									
+									else :
+										a='Mauvaise Commande'
+										conn.send(a)
+
+								elif verifBlacklist(nom_blackliste) == 1 :
+									print("L'utilisateur n'est pas dans la Blacklist")
+									a='non'
+									conn.send(a.encode())
+
+								else :
+									print("Erreur !!")
+									a='erreur'
+									conn.send(a.encode())
+						print("fin boucle while blacklist")
+
+
+
+
+					else :
+						print("On est dans l'avant dernier else")
+						choix1="Ce choix n'est pas possible"
+						conn.send(choix1.encode())
+						print ("Ce n'est pas un bon choix")
+
+		else :
+			user1="Commande inconnue"
+			conn.send(user1.encode())
+
 
 	return DROIT
+
+
+
+
+
+
+
 
 def command_checker(command, status,conn, ip, port, dossier):
 
@@ -402,7 +662,11 @@ def barman(conn,ip,port,DROIT):
 		else :
 			os.popen("cd user/;chmod -w $PWD")
 		print (data)
-		dossier = command_checker(data,DROIT,conn,ip, port,dossier)
+		if data=='1':
+			print("on est dans le data 1")
+			DROIT=LOGIN(conn)
+		else :
+			dossier = command_checker(data,DROIT,conn,ip, port,dossier)
 #----------------------------------------------
 #			if l[0]== "edit" and droit == "m": #pour editer un texte seul les medecins peuvent
 #				EDIT(conn,l[1])

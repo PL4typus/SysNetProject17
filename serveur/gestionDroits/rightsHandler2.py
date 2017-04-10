@@ -15,7 +15,7 @@ def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 
 
 
-def rights(Droit,user):
+def rightsManager(Droit,user):
     PATH_INF="/home/squirrel/Documents/projetreseau17/Authentification/passwordInf.txt"
     PATH_INT="/home/squirrel/Documents/projetreseau17/Authentification/passwordInt.txt"
     PATH_MED="/home/squirrel/Documents/projetreseau17/Authentification/passwordMed.txt"
@@ -35,10 +35,9 @@ def rights(Droit,user):
             while ans not in {"Inf","I","INF","inf","i","q","Q"}:
                 print("(Inf)irmier \t (I)nterne \t (Q)uitter")
                 ans = input(">") #conn_client.recv().decode()
-            if ans in {"Inf","INF"}:
+            if ans in {"Inf","INF","inf"}:
                 print("Quelle personne ?")
                 l=lecture_fichier(PATH_INF)
-                print(l)
                	for i in l:
                     print(i[0])
                 while check==False:
@@ -47,16 +46,67 @@ def rights(Droit,user):
                     for i in l:
                         if (adoube == i[0]) or (adoube in {"q","Q"}):
                             check = True
-
                 if adoube not in {"q","Q"}:
+                    print(adoube," a actuellement les droits suivants:")
+                    f = open(PATH_DROITS_Inf,"r")
+                    rights=f.read().splitlines()
+                    f.close()
+                    saved_i=0
+                    for i in range(len(rights)):
+                        rights[i]=rights[i].split(";")
+                    for i in range(len( rights)):
+                        if rights[i][0]==adoube:
+                            print("Par defaut, ",rights[i][2])
+                            saved_i=i
+                            for j in range(len(rights[i])):
+                                if j%2==1:
+                                    print("Pour le fichier ",rights[i][j],": ",rights[i][j+1])
+                    print("Entrez un nom de fichier puis les nouveaux droits. Ex: ficheMichu rw")
+                    print("r : droits de lecture \t w : droits d'écriture (la personne verra le contenu du fichier lors de l'édition")
+                    print("Entrez § pour terminer")
+                    verdict=" "
+                    t_verdict=rights[saved_i][1]+" "+rights[saved_i][2]
+                    k=0
+                    while verdict != "§":
+                        verdict=input(">>>>>:")
+                        if verdict != "§":
+                            t_verdict = t_verdict+ ";"+verdict
+                    t_verdict=t_verdict.split(";")
+                    for i in range(len(t_verdict)):
+                        t_verdict[i]=t_verdict[i].split(" ")
+                    di_verdict={}
+                    for i in range(len(t_verdict)):
+                        for j in range(len(t_verdict[i])):
+                            di_verdict[t_verdict[i][0]]=t_verdict[i][1]
+                    for key in di_verdict.keys():
+                        if key not in rights[saved_i]:
+                                rights[saved_i].append()
+                        for i in range(len(rights[saved_i])):
+                            if rights[saved_i][i]==key:
+                                rights[saved_i][i+1]=di_verdict.get(key,"r")
+
+                    print(rights)
+
+
+
+
+
+
+
+
+
+
+
                     ls= os.popen("ls "+user ).read()
+
                     while fich not in ls:
                         print("Entrez un nom de fichier valide:")
                         fich =input(">>>") # conn_client.recv().decode()
                     print("Vous avez choisi ", fich)
-                    print("Les droits sur ce fichier sont actuellement:")
-                    rights=numpy.loadtxt(PATH_DROITS_Inf,dtype={'name': ('file','rights')},delimiter=";")
-                    print(rights)
 
 
-rights("M","/home/squirrel/Documents/projetreseau17/TraitementTxtFork/user")
+
+
+
+rightsManager("M","/home/squirrel/Documents/projetreseau17/TraitementTxtFork/user")
+
