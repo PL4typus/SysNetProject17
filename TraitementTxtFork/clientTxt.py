@@ -18,7 +18,7 @@ historique = " "
 s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 s.connect((TCP_IP,TCP_PORT))
-saisie=""
+decision=""
 
 def PlsrLignes ():
 	a = " "
@@ -29,10 +29,10 @@ def PlsrLignes ():
 			a = a + "\n"+str(b)
 	return a
 
-while saisie!= "exit":
+while decision!= "exit":
 	print("=====================================================================================")
 	print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
-	print("Voulez vous:\n\t¤Vous inscrire (signup)?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
+	print("Voulez vous:\n\t¤Vous connectez en tant qu'Administrateur (admin) ?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
 
 
 	service=True
@@ -40,10 +40,9 @@ while saisie!= "exit":
 	tout=True
 	verrouille=True
 
-	saisie=input(">> ")
+	decision=input(">> ")
 
-	#if saisie == "signup":
-	if saisie == "login":
+	if decision == "login":
 
 		while tout:
 			user=''
@@ -233,4 +232,6 @@ while saisie!= "exit":
 				rep=s.recv(BUFFER_SIZE)
 				print (rep.decode())
 
+	elif decision == 'admin' :
+		print("admin")
 

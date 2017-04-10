@@ -25,7 +25,6 @@ DROIT=""
 
 mdpMed="azerty"
 Med="médecin"
-
 cleMed="bouteille"
 cleInf="livre"
 cleInt="portable"
@@ -329,12 +328,11 @@ print("")
 print("")
 
 
-"""print(lecture_fichier('passwordMed.txt'))
+print(lecture_fichier('passwordMed.txt'))
 print("")
 print("")
 
-print("Alo")
-a=verification_nom_utilistaeur('Alo', 'passwordMed.txt')
+"""a=verification_nom_utilistaeur('Alo', 'passwordMed.txt')
 print(a)
 print("")
 print("")
