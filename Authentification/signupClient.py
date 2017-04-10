@@ -1,8 +1,8 @@
 #!/usr/bin/python3.4
 #client authentification
+#coding: utf8
 import os
 from getpass import getpass
-#coding: utf8
 import hashlib
 
 import socket
@@ -18,13 +18,12 @@ s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 # on a specified port
 s.connect((localhost,port))
 
-saisie=""
 
 print("===========================================================")
 print("<<<<<<<<<<<<< Serveur pour administratuer >>>>>>>>>>>>>>>>>")
 print("===========================================================")
 
-
+saisie=""
 user=input("Utilisateur : ")
 s.send(user.encode())
 user1=s.recv(16).decode()

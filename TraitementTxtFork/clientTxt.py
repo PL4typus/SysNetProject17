@@ -41,6 +41,9 @@ while decision!= "exit":
 	verrouille=True
 
 	decision=input(">> ")
+	s.send(decision.encode())
+
+
 
 	if decision == "login":
 
@@ -226,12 +229,41 @@ while decision!= "exit":
 
 			elif l[0] == "1" :
 				historique = " "
+				s.send(cmd.encode())
 				break
 			else :
 				s.send(cmd.encode())
 				rep=s.recv(BUFFER_SIZE)
 				print (rep.decode())
 
-	elif decision == 'admin' :
-		print("admin")
+
+	elif decision=="admin":
+		print("")
+		saisie=""
+		user=input("Utilisateur : ")
+		s.send(user.encode())
+		user1=s.recv(16).decode()
+		print(user1)
+
+		if user1 == "admin" :
+			mdp_admin1=''
+			while mdp_admin1 != 'correct' :
+				mdp_admin=getpass("mot de passe administrateur : ")
+				#mdp_admin=
+				s.send(mdp_admin.encode())
+				mdp_admin1=s.recv(16).decode()
+				print("reponse : " ,mdp_admin1)
+
+				if mdp_admin1=='annuler' :
+					print("Vous voulez annuler")
+					mdp_admin1='correct'
+					tout=False
+					break
+
+				elif mdp_admin1=='correct' :
+					print("Code bon")
+					tout=True
+
+				else :
+					print("Veuillez réessayez")
 
