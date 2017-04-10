@@ -4,7 +4,7 @@
 import socket
 import os
 
-TCP_IP = '127.0.0.1'
+TCP_IP = '172.16.162.128'
 TCP_PORT=6262
 BUFFER_SIZE=100
 
@@ -80,13 +80,7 @@ while 1:
 	elif data=="v":
 		print("Je vais visionner")
 
-		conn.send(ls)
-		choix=conn.recv(BUFFER_SIZE);
-		choix=choix.decode()
-		print("Choix= ",choix)
-
-		cheminImage = "image/"+choix+".jpg"
-		conn.send(os.popen("eog "+cheminImage))
+		
 
 	else:
 		print ("received data:", data)
