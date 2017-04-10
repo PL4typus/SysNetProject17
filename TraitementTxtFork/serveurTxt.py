@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import socket,sys,os
-from gestionErr.py import *
+#from gestionErr.py import *
 from getpass import getpass
 import hashlib
 
@@ -19,14 +19,43 @@ s.bind((TCP_IP,TCP_PORT))
 
 ############################################################################################
 ## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
-def lecture_fichier(fichier) :
+def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
-	fo = f.read(1024)
-	fo=fo.rstrip()
-	l = fo.split(';')
+	fo = f.read(2048)
+	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
+	f.close()
 	return l
+
+def verification_nom_utilistaeur(nom, fichier):
+	liste = lecture_fichier(fichier)
+	print(liste)
+	for e in liste :
+		print(e[0])
+		if e[0] == nom :
+			return 0
+	return 1
+
+## Fonction pour blacklister queqlu'un #######################
+def failPassword(nom):
+
+	f = open("blacklist.txt",'a')
+	f.write(nom+";")
+
+
+## Fonction pour verifier si une personne n'est pas dans la blackliste #####
+def verifBlacklist(nom):
+
+	f=open("blacklist.txt",'r')
+	lecture=f.read(1024)
+	lecture=lecture.rstrip()
+	bl=lecture.split(";")
+
+	if nom in bl:
+		return 0
+	else:
+		return 1
 
 
 ###########################################################################################
@@ -50,16 +79,19 @@ def LOGIN(conn):
 			if service == "Medecin":
 				DROIT="M"
 				l=lecture_fichier("passwordMed.txt")
+				print(l)
 				metier = False
 				conn.send(b"1")
 			elif service == "Infirmier":
 				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
+				print(l)
 				metier = False
 				conn.send(b"2")
 			elif service == "Interne":
 				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
+				print(l)
 				metier = False
 				conn.send(b"3")
 			else:
@@ -89,9 +121,8 @@ def LOGIN(conn):
 							print(user," BLACKLISTÉ","rdv administration")
 
 				if session == True:
-
-					print ( "je n'ai pas trouvé ou blacklisté",useSr)
-
+					conn.send(b"0")
+					print ( "je n'ai pas trouvé ou blacklisté",user)
 		while verrouille and tout == False :
 
 			verif=conn.recv(20)

@@ -1,9 +1,9 @@
-#!/usr/bin/env python4.4
+#!/usr/bin/env python3.4
 #coding: utf8
 
 
 import socket
-import gestionErr.py
+#from gestionErr.py import *
 from getpass import getpass
 
 
