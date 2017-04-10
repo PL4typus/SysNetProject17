@@ -62,7 +62,7 @@ if user1 == "admin" :
 			choix = input(">> ") #signup ou blacklist
 			s.send(choix.encode())
 
-			if choix=="annuler" :
+			if choix=="fin" :
 				break
 
 			else :
@@ -89,6 +89,8 @@ if user1 == "admin" :
 									oknom=s.recv(16).decode()
 									if oknom == 'okNom' :
 										invalide = False
+									else :
+										print("Ce nom d'utilisateur existe déjà...")
 
 								
 								mdp = getpass("Mot de passe :")
@@ -109,6 +111,7 @@ if user1 == "admin" :
 
 							clé=s.recv(64).decode()
 							if clé == "okCle" :
+								print(clé)
 
 								invalide=True
 								while invalide :
@@ -117,6 +120,8 @@ if user1 == "admin" :
 									oknom=s.recv(16).decode()
 									if oknom == 'okNom' :
 										invalide = False
+									else :
+										print("Ce nom d'utilisateur existe déjà...")
 
 								mdp = getpass("Mot de passe :")
 								hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
@@ -144,6 +149,8 @@ if user1 == "admin" :
 									oknom=s.recv(32).decode()
 									if oknom == 'okNom' :
 										invalide = False
+									else :
+										print("Ce nom d'utilisateur existe déjà...")
 
 								mdp = getpass("Mot de passe :")
 								hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
@@ -164,7 +171,12 @@ if user1 == "admin" :
 						nom_blackliste=input("Utilisateur blacklisté : ")
 						s.send(nom_blackliste.encode())
 						a=s.recv(16).decode()
-						if a == 'oui' :
+
+						if a=='stop':
+								print("Vous voulez finir les modifs blacklist")
+								black='stop'
+
+						elif a == 'oui' :
 							print("Cet utilisateur est dans la blackliste ")
 							print("Pour retirer cet utilisateur de la blacklist taper la commande <delet nom_utilisateur>")
 							delet=input(">> ")
@@ -177,16 +189,20 @@ if user1 == "admin" :
 								s.send(a.encode())
 								a=s.recv(64).decode()
 								print(a)
-								print(delet[1]+" peut de nouveau se connecter")
+								print("L'utilisateur peut de nouveau se connecter")
 
-							elif ok=='annuler':
-								black=''
+							elif ok=='stop':
+								print("Vous voulez finir les modifs blacklist")
+								black='stop'
 
 							else :
 								print(ok)
 
 						elif a == 'non' :
 							print("Cet utilisateur n'est pas dans la Blacklist")
+
+						else : 
+							print("Erreur aucun truc bon....")
 
 
 

@@ -113,7 +113,8 @@ def SIGNUP():
 				choix=s.recv(32).decode()
 				print(choix)
 
-				if choix=='annuler' :
+				if choix=='fin' :
+					tout=False
 					break
 
 				elif choix == "signup" :
@@ -151,8 +152,7 @@ def SIGNUP():
 
 							hash_mdp = s.recv(64).decode()
 							f = open('passwordMed.txt','a')
-							f.write(hash_mdp)
-							tout=False
+							f.write(hash_mdp+"\n")
 							print("Fin enregistrement")
 
 						
@@ -174,8 +174,8 @@ def SIGNUP():
 							invalide=True
 							while invalide :
 								nom=s.recv(24).decode()
-								if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 0:
-									f = open('passwordMed.txt','a')
+								if verification_nom_utilistaeur(nom, 'passwordInf.txt') == 1:
+									f = open('passwordInf.txt','a')
 									f.write(nom+":")
 									oknom="okNom"
 									invalide = False
@@ -187,8 +187,7 @@ def SIGNUP():
 
 							hash_mdp = s.recv(64).decode()
 							f = open('passwordInf.txt','a')
-							f.write(hash_mdp)
-							tout=False
+							f.write(hash_mdp+"\n")
 							print("Fin enregistrement")
 						
 						else:
@@ -208,8 +207,8 @@ def SIGNUP():
 							invalide=True
 							while invalide :
 								nom=s.recv(24).decode()
-								if verification_nom_utilistaeur(nom, 'passwordMed.txt') == 1:
-									f = open('passwordMed.txt','a')
+								if verification_nom_utilistaeur(nom, 'passwordInt.txt') == 1:
+									f = open('passwordInt.txt','a')
 									f.write(nom+":")
 									oknom="okNom"
 									invalide = False
@@ -221,8 +220,7 @@ def SIGNUP():
 
 							hash_mdp = s.recv(64).decode()
 							f = open('passwordInt.txt','a')
-							f.write(hash_mdp)
-							tout=False
+							f.write(hash_mdp+"\n")
 							print("Fin enregistrement")
 
 						
@@ -246,55 +244,76 @@ def SIGNUP():
 
 						nom_blackliste = s.recv(32).decode()
 						print("L'utilisateur blacklisté est : ", nom_blackliste)
-						verifBlacklist(nom_blackliste)
-						if verifBlacklist(nom_blackliste) == 0 :
-							print("Utilisateur dans blacklist")
-							a='oui'
-							s.send(a.encode())
-
-							delet=s.recv(64).decode()
-							delet=delet.split(' ')
-							print(delet)
-
-							if delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==0 :
-								a='okDelet'
-								s.send(a.encode())
-								print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
-								b=s.recv(16).decode()
-								print(b)
-
-								f=open("blacklist.txt",'r')
-								lecture=f.read(1024).rstrip()
-								bl=lecture.split(";")
-								print(bl)
-								bl.remove(delet[1])
-								print(bl)
-								a='Utilistateur enlevé de la Blacklist'
-								s.send(a.encode())
-								f.close()
-								
-							elif delet[0]=='fin' :
-								a='annuler'
+						
+						if nom_blackliste == 'fin' :
+								a='stop'
+								print(a)
 								s.send(a.encode())
 								nom_blackliste='retour'
+								black='stop'
 
-							elif delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==1 :
-								a="not In Blacklist"
+						else :
+							verifBlacklist(nom_blackliste)
+							if verifBlacklist(nom_blackliste) == 0 :
+								print("Utilisateur dans blacklist")
+								a='oui'
 								s.send(a.encode())
-							
-							else :
-								a='Mauvaise Commande'
-								s.send(a)
 
-						elif verifBlacklist(nom_blackliste) == 1 :
-							print("L'utilisateur n'est pas dans la Blacklist")
-							a='non'
-							s.send(a.encode())
+								delet=s.recv(64).decode()
+								delet=delet.split(' ')
+								print(delet[0])
+								print(delet[1])
+
+								if delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==0 and delet[0]!='fin' :
+									a='okDelet'
+									s.send(a.encode())
+									print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
+									b=s.recv(16).decode()
+									print(b)
+
+									f=open("blacklist.txt",'r')
+									lecture=f.read(1024)
+									lecture=lecture.rstrip()
+									bl=lecture.split(";")
+									bl.pop()
+									print(bl)
+									bl.remove(delet[1])
+									print(bl)
+									f.close()
+
+									f=open("blacklist.txt",'w')
+									for e in bl:
+										f.write(e+";")
+									
+									a='Utilistateur enlevé de la Blacklist'
+									s.send(a.encode())
+									f.close()
+									
+
+								elif delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==1 :
+									a="not In Blacklist"
+									s.send(a.encode())
+								
+								else :
+									a='Mauvaise Commande'
+									s.send(a)
+
+							elif verifBlacklist(nom_blackliste) == 1 :
+								print("L'utilisateur n'est pas dans la Blacklist")
+								a='non'
+								s.send(a.encode())
+
+							else :
+								print("Erreur !!")
+								a='erreur'
+								s.send(a.encode())
+					print("fin boucle while blacklist")
 
 
 
 
 				else :
+					print("On est dans l'avant dernier else")
 					choix1="Ce choix n'est pas possible"
 					s.send(choix1.encode())
 					print ("Ce n'est pas un bon choix")
