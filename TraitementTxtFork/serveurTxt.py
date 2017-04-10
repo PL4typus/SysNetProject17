@@ -87,11 +87,11 @@ def LOGIN(conn):
 							tout = False
 						else:
 							print(user," BLACKLISTÉ","rdv administration")
-						
+
 				if session == True:
 
-					print ( "je n'ai pas trouvé ou blacklisté",useSr)	
-			
+					print ( "je n'ai pas trouvé ou blacklisté",useSr)
+
 		while verrouille and tout == False :
 
 			verif=conn.recv(20)
@@ -215,7 +215,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 			r="Erreur: argument manquant"
 			conn.send(r.encode())
 		else :
-			
+
 			if dossier == "user" and command[2] ==".." :
 				r = "Vous n'avez pas l'autorisation de faire cela"
 				conn.send(r.encode())
@@ -223,8 +223,8 @@ def command_checker(command, status,conn, ip, port, dossier):
 				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
 				rep = "Commande cp effectuée\n"+rep.read()
 				conn.send(rep.encode())
-			
-		
+
+
 	elif command[0] == "edit": #nom du fichier
 
 		EDIT(conn, command[1],dossier)
@@ -244,7 +244,7 @@ def command_checker(command, status,conn, ip, port, dossier):
 		user=user.decode()
 		doc=conn.recv(BUFFER_SIZE)
 		doc=doc.decode()
-		
+
 		if doc != "ERR":
 			print("L'utilisateur",user,"souhaite signer",doc,".txt")
 			SIGNER(user,doc)
