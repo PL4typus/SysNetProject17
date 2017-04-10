@@ -328,9 +328,9 @@ print("")
 print("")
 
 
-print(lecture_fichier('passwordMed.txt'))
+"""print(lecture_fichier('passwordMed.txt'))
 print("")
-print("")
+print("")"""
 
 """a=verification_nom_utilistaeur('Alo', 'passwordMed.txt')
 print(a)
