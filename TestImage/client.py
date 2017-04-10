@@ -90,21 +90,11 @@ while msg_envoye != ("EXIT"):
 
 	elif msg_envoye=="v":
 		print("Je vais visionner")
-		lsretour=s.recv(BUFFER_SIZE)
-		print("Image disponible:\n",lsretour.decode())
-
-		
-		choix=input("Quel image?>>")
-		s.send(choix.encode())
-		print("Choix=",choix)
-
-
 
 	else:
 		print(msg_envoye,"3")
-		msg_envoye=msg_envoye.encode()
-		s.send(msg_envoye)
-		s.recv(BUFFER_SIZE)
+		s.send(msg_envoye.encode())
+		
 
 print ("\n\t<<<<<<<<<<Deconnexion du serveur de test>>>>>>>>>>>>\n")
 print("----------------------------------------------------------------")
