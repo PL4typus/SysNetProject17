@@ -11,9 +11,10 @@ def lecture_fichier(fichier) :
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
 
-	return l
+	return lv
 
-def rights(conn_client,Droit,user):
+
+def rights(Droit,user):
     PATH_INF="../../Authentification/passwordInf.txt"
     PATH_INT="../../Authentification/passwordInt.txt"
     PATH_MED="../../Authentification/passwordMed.txt"
@@ -24,6 +25,7 @@ def rights(conn_client,Droit,user):
     adoube=" "
     fich=" "
     ls = " "
+    check=False
 
     if Droit=="M":
         while True:
@@ -35,12 +37,15 @@ def rights(conn_client,Droit,user):
             if ans in {"Inf","INF"}:
                 print("Quelle personne ?")
                 l=lecture_fichier(PATH_INF)
-                for x in l[i][0]:
-                    print(x)
 
-                while (adoube not in l[i][0]) or (adoube not in {"q","Q"}):
+               	for i in range(len(l)):
+                    print(l[i][0])
+                while check==False:
                     print("Veuillez choisir quelqu'un dans la liste ou Q pour quitter")
                     adoube=input(">>") #conn_client.recv().decode()
+                    for i in range(len(l)):
+                        if adoube == l[i][0]:
+                            check = True
 
                 if adoube not in {"q","Q"}:
                     ls= os.popen("ls user").read()
@@ -52,3 +57,5 @@ def rights(conn_client,Droit,user):
                     rights=numpy.loadtxt(PATH_DROITS_Inf,dtype={'name': ('file','rights')},delimiter=";")
                     print(rights)
 
+
+rights("M","user")
