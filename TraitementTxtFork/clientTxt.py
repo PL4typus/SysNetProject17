@@ -2,7 +2,7 @@
 #coding: utf8
 
 
-import socket
+import socket,sys,os
 #from gestionErr.py import *
 from getpass import getpass
 
@@ -12,7 +12,7 @@ TCP_IP ='127.0.0.1'
 TCP_PORT = 6262
 
 BUFFER_SIZE = 1024
-
+historique = " "
 
 
 s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -113,6 +113,12 @@ while saisie!= "exit":
 		while 1 :
 			cmd=input("Saisir la commande ")
 			l = cmd.split(" ")
+			i = 0
+			maCom = " "
+			while i<len(l) :
+				maCom = maCom+l[i]
+				i = i+1
+			historique = historique +"\n"+ maCom
 			if l[0]== "edit" :
 				if len(l) < 2 :
 					print ("Erreur : argument manquant\nuse : edit nomfichier")
@@ -209,9 +215,18 @@ while saisie!= "exit":
 				print("creer :		créé un fichier (use : creer nomfichier)")
 				print("edit :		édite un fichier (use : edit nomfichier)")
 				print("signer :	signe un fichier ")
+				print("clear :		efface votre page ")
+				print("historique :		affiche l'historique de vos commandes ")
+				print("whereis :		trouve un fichier (use : whereis nomfichier) ")
+			elif l[0]=="clear":
+				print ("\033[H\033[2J")
+
+			elif l[0]=="historique":
+				print (historique)
 				
 
 			elif l[0] == "1" :
+				historique = " "
 				break
 			else :
 				s.send(cmd.encode())

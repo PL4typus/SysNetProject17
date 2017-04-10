@@ -259,6 +259,44 @@ def command_checker(command, status,conn, ip, port, dossier):
 	elif command[0] == "edit": #nom du fichier
 
 		EDIT(conn, command[1],dossier)
+	elif command[0] == "whereis": #nom du fichier
+		if len(command)<2:
+			r="Erreur: argument manquant"
+			conn.send(r.encode())
+		else:
+			lsR = os.popen("cd user;ls -R")
+			lsR = lsR.read()
+			lsR = lsR.splitlines()
+			Clef = ""
+			tabVal = []
+			dico = {}
+			i=0	
+			while i < len(lsR) :
+				if ":" in lsR[i] :
+					if Clef != "":
+						print ("tabVal : ",tabVal)
+						dico[Clef] = str(tabVal)
+						tabVal[:]=[]
+					Clef = lsR[i]
+				else:
+					tabVal.append(lsR[i])
+				i=i+1
+		
+			dico[Clef] = str(tabVal)
+			tabVal[:]=[]
+			reponse="le fichier n'as pas été trouvé"
+			for Clef in dico.keys():
+				fichiers = dico.get(Clef)
+				print (fichiers)
+				if command[1] in fichiers :
+					Clef=Clef.replace(".","user")
+					Clef=Clef.replace(":","")
+					reponse="le fichier est dans "+Clef
+		
+			conn.send(reponse.encode())
+
+				
+			
 
 	elif command[0] == "creer": #nom du fichier
 
