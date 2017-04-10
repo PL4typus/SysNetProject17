@@ -1,8 +1,8 @@
 #!/usr/bin/python3.4
 #client authentification
+#coding: utf8
 import os
 from getpass import getpass
-#coding: utf8
 import hashlib
 
 import socket
@@ -18,13 +18,12 @@ s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 # on a specified port
 s.connect((localhost,port))
 
-saisie=""
 
 print("===========================================================")
 print("<<<<<<<<<<<<< Serveur pour administratuer >>>>>>>>>>>>>>>>>")
 print("===========================================================")
 
-
+saisie=""
 user=input("Utilisateur : ")
 s.send(user.encode())
 user1=s.recv(16).decode()
@@ -34,7 +33,7 @@ if user1 == "admin" :
 
 	mdp_admin1=''
 	while mdp_admin1 != 'correct' :
-		mdp_admin=input("mot de passe administrateur : ")
+		mdp_admin=getpass("mot de passe administrateur : ")
 		s.send(mdp_admin.encode())
 		mdp_admin1=s.recv(16).decode()
 		print("reponse : " ,mdp_admin1)
@@ -55,14 +54,12 @@ if user1 == "admin" :
 	while tout :
 
 			print("Vous êtes connecté en tant qu'administrateur.")
-			print("Que voulez vous faire ?")
-			print("	- enregistrer une nouvelle personne (signup)")
-			print(" 	- modifier la blacklist (blacklist)")
+			print("Voulez vous:\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
 			print(" ")
 			choix = input(">> ") #signup ou blacklist
 			s.send(choix.encode())
 
-			if choix=="annuler" :
+			if choix=="fin" :
 				break
 
 			else :
@@ -89,6 +86,8 @@ if user1 == "admin" :
 									oknom=s.recv(16).decode()
 									if oknom == 'okNom' :
 										invalide = False
+									else :
+										print("Ce nom d'utilisateur existe déjà...")
 
 								
 								mdp = getpass("Mot de passe :")
@@ -109,6 +108,7 @@ if user1 == "admin" :
 
 							clé=s.recv(64).decode()
 							if clé == "okCle" :
+								print(clé)
 
 								invalide=True
 								while invalide :
@@ -117,6 +117,8 @@ if user1 == "admin" :
 									oknom=s.recv(16).decode()
 									if oknom == 'okNom' :
 										invalide = False
+									else :
+										print("Ce nom d'utilisateur existe déjà...")
 
 								mdp = getpass("Mot de passe :")
 								hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
@@ -144,6 +146,8 @@ if user1 == "admin" :
 									oknom=s.recv(32).decode()
 									if oknom == 'okNom' :
 										invalide = False
+									else :
+										print("Ce nom d'utilisateur existe déjà...")
 
 								mdp = getpass("Mot de passe :")
 								hash_mdp = hashlib.sha256(mdp.encode()).hexdigest()
@@ -157,12 +161,55 @@ if user1 == "admin" :
 						service_erreur=s.recv(64).decode()
 						print(service_erreur)
 
+
+				elif choix1=='blacklist' :
+					black='go'
+					while black=='go' :
+						nom_blackliste=input("Utilisateur blacklisté : ")
+						s.send(nom_blackliste.encode())
+						a=s.recv(16).decode()
+
+						if a=='stop':
+								print("Vous voulez finir les modifs blacklist")
+								black='stop'
+
+						elif a == 'oui' :
+							print("Cet utilisateur est dans la blackliste ")
+							print("Pour retirer cet utilisateur de la blacklist taper la commande <delet nom_utilisateur>")
+							delet=input(">> ")
+							s.send(delet.encode())
+
+							ok=s.recv(64).decode()
+							if ok=='okDelet':
+								print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
+								b='dansDelet'
+								s.send(a.encode())
+								a=s.recv(64).decode()
+								print(a)
+								print("L'utilisateur peut de nouveau se connecter")
+
+							elif ok=='stop':
+								print("Vous voulez finir les modifs blacklist")
+								black='stop'
+
+							else :
+								print(ok)
+
+						elif a == 'non' :
+							print("Cet utilisateur n'est pas dans la Blacklist")
+
+						else : 
+							print("Erreur aucun truc bon....")
+
+
+
+
 				else :
 					print(choix1)
 
 else :
 	print("nop pas admin")
 
-print("==================================================")
+print("================================================================")
 print("					Fin de connexion")
-print("==================================================")
+print("================================================================")
