@@ -55,9 +55,7 @@ if user1 == "admin" :
 	while tout :
 
 			print("Vous êtes connecté en tant qu'administrateur.")
-			print("Que voulez vous faire ?")
-			print("	- enregistrer une nouvelle personne (signup)")
-			print(" 	- modifier la blacklist (blacklist)")
+			print("Voulez vous:\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
 			print(" ")
 			choix = input(">> ") #signup ou blacklist
 			s.send(choix.encode())
