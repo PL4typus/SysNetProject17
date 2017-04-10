@@ -78,9 +78,14 @@ def rightsManager(Droit,user):
                     for i in range(len(t_verdict)):
                         for j in range(len(t_verdict[i])):
                             di_verdict[t_verdict[i][0]]=t_verdict[i][1]
-                    for i in range(len(rights[saved_i])):
-                        for key in di_verdict.keys():
+                    for key in di_verdict.keys():
+                        if key not in rights[saved_i]:
+                                rights[saved_i].append()
+                        for i in range(len(rights[saved_i])):
                             if rights[saved_i][i]==key:
+                                rights[saved_i][i+1]=di_verdict.get(key,"r")
+
+                    print(rights)
 
 
 
