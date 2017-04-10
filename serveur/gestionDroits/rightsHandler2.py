@@ -3,21 +3,22 @@
 
 import sys, socket, os, time,numpy
 
-def lecture_fichier(fichier) :
+## Fonction qui renvoie une liste de liste de la forme : [[user1,mdp1],[user2,mdp2]] ##
+def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
-	fo = f.read(1024)
-	fo=fo.rstrip()
-	l = fo.split(';')
+	fo = f.read(2048)
+	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
+	f.close()
+	return l
 
-	return lv
 
 
 def rights(Droit,user):
-    PATH_INF="../../Authentification/passwordInf.txt"
-    PATH_INT="../../Authentification/passwordInt.txt"
-    PATH_MED="../../Authentification/passwordMed.txt"
+    PATH_INF="/home/squirrel/Documents/projetreseau17/Authentification/passwordInf.txt"
+    PATH_INT="/home/squirrel/Documents/projetreseau17/Authentification/passwordInt.txt"
+    PATH_MED="/home/squirrel/Documents/projetreseau17/Authentification/passwordMed.txt"
     PATH_DROITS_Inf="fichier_droitsInf.plp"
     PATH_DROITS_Int="fichier_droitsInt.plp"
     tab_droits={}
@@ -37,18 +38,18 @@ def rights(Droit,user):
             if ans in {"Inf","INF"}:
                 print("Quelle personne ?")
                 l=lecture_fichier(PATH_INF)
-
-               	for i in range(len(l)):
-                    print(l[i][0])
+                print(l)
+               	for i in l:
+                    print(i[0])
                 while check==False:
                     print("Veuillez choisir quelqu'un dans la liste ou Q pour quitter")
                     adoube=input(">>") #conn_client.recv().decode()
-                    for i in range(len(l)):
-                        if adoube == l[i][0]:
+                    for i in l:
+                        if (adoube == i[0]) or (adoube in {"q","Q"}):
                             check = True
 
                 if adoube not in {"q","Q"}:
-                    ls= os.popen("ls user").read()
+                    ls= os.popen("ls "+user ).read()
                     while fich not in ls:
                         print("Entrez un nom de fichier valide:")
                         fich =input(">>>") # conn_client.recv().decode()
@@ -58,4 +59,4 @@ def rights(Droit,user):
                     print(rights)
 
 
-rights("M","user")
+rights("M","/home/squirrel/Documents/projetreseau17/TraitementTxtFork/user")
