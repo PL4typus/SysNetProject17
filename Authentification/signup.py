@@ -52,14 +52,20 @@ def verification_nom_utilistaeur(nom, fichier):
 			return 0
 	return 1
 
+## Fonction pour blacklister queqlu'un #######################
+def failPassword(nom):
+	f = open("blacklist.txt",'a')
+	f.write(nom+";")
+
+
+
 ## Fonction pour verifier si une personne n'est pas dans la blackliste #####
 def verifBlacklist(nom):
 
-	f=open("fichierTest.txt",'r')
-	lecture=f.read(1024)
-	bl=lecture.splitlines()
-	print(bl)
-	f.close()
+	f=open("blacklist.txt",'r')
+	lecture=f.read(1024).rstrip()
+	bl=lecture.split(";")
+	
 	if nom in bl:
 		return 0
 	else:
@@ -242,7 +248,7 @@ def SIGNUP():
 						print("L'utilisateur blacklisté est : ", nom_blackliste)
 						verifBlacklist(nom_blackliste)
 						if verifBlacklist(nom_blackliste) == 0 :
-							print("Utilisateur dans blackliste")
+							print("Utilisateur dans blacklist")
 							a='oui'
 							s.send(a.encode())
 
@@ -250,11 +256,40 @@ def SIGNUP():
 							delet=delet.split(' ')
 							print(delet)
 
-							if delet[0] == 'delet' and len(delet)==3 :
+							if delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==0 :
 								a='okDelet'
 								s.send(a.encode())
-								print("Vous allez effacer l'utilisateur "+delet[2]+" de la blackliste")
+								print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
+								b=s.recv(16).decode()
+								print(b)
+
+								f=open("blacklist.txt",'r')
+								lecture=f.read(1024).rstrip()
+								bl=lecture.split(";")
+								print(bl)
+								bl.remove(delet[1])
+								print(bl)
+								a='Utilistateur enlevé de la Blacklist'
+								s.send(a.encode())
+								f.close()
 								
+							elif delet[0]=='fin' :
+								a='annuler'
+								s.send(a.encode())
+								nom_blackliste='retour'
+
+							elif delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==1 :
+								a="not In Blacklist"
+								s.send(a.encode())
+							
+							else :
+								a='Mauvaise Commande'
+								s.send(a)
+
+						elif verifBlacklist(nom_blackliste) == 1 :
+							print("L'utilisateur n'est pas dans la Blacklist")
+							a='non'
+							s.send(a.encode())
 
 
 
