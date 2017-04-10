@@ -120,7 +120,7 @@ def LOGIN(conn):
 						
 				if session == True:
 
-					print ( "je n'ai pas trouvé ou blacklisté",useSr)	
+					print ( "je n'ai pas trouvé ou blacklisté",user)	
 			
 		while verrouille and tout == False :
 
