@@ -217,6 +217,7 @@ while saisie!= "exit":
 				print("signer :	signe un fichier ")
 				print("clear :		efface votre page ")
 				print("historique :		affiche l'historique de vos commandes ")
+				print("whereis :		trouve un fichier (use : whereis nomfichier) ")
 			elif l[0]=="clear":
 				print ("\033[H\033[2J")
 
