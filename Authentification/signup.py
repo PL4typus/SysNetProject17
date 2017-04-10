@@ -32,23 +32,38 @@ cleInt="portable"
 
 #################### Fonction pour la liste des utilisateur avec leur mots de pass ########
 
+#[[nom1,mdp1],[nom2,mdp2]....]
+
 def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f = open(fichier,'r')
 	fo = f.read(2048)
-	fo=fo.rstrip()
-	l = fo.split(';')
+	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
+	f.close()
 	return l
 
 def verification_nom_utilistaeur(nom, fichier):
 	liste = lecture_fichier(fichier)
+	print(liste)
 	for e in liste :
+		print(e[0])
 		if e[0] == nom :
 			return 0
-		else :
-			return 1
+	return 1
 
+## Fonction pour verifier si une personne n'est pas dans la blackliste #####
+def verifBlacklist(nom):
+
+	f=open("fichierTest.txt",'r')
+	lecture=f.read(1024)
+	bl=lecture.splitlines()
+	print(bl)
+	f.close()
+	if nom in bl:
+		return 0
+	else:
+		return 1
 
 
 ##########################################################################
@@ -130,7 +145,7 @@ def SIGNUP():
 
 							hash_mdp = s.recv(64).decode()
 							f = open('passwordMed.txt','a')
-							f.write(hash_mdp+";")
+							f.write(hash_mdp)
 							tout=False
 							print("Fin enregistrement")
 
@@ -166,7 +181,7 @@ def SIGNUP():
 
 							hash_mdp = s.recv(64).decode()
 							f = open('passwordInf.txt','a')
-							f.write(hash_mdp+";")
+							f.write(hash_mdp)
 							tout=False
 							print("Fin enregistrement")
 						
@@ -200,7 +215,7 @@ def SIGNUP():
 
 							hash_mdp = s.recv(64).decode()
 							f = open('passwordInt.txt','a')
-							f.write(hash_mdp+";")
+							f.write(hash_mdp)
 							tout=False
 							print("Fin enregistrement")
 
@@ -214,6 +229,36 @@ def SIGNUP():
 						s.send(service_erreur.encode())
 						print ("Ce service n'existe pas.")
 
+				elif choix=="blacklist" :
+					choix1 = "blacklist"
+					print("go blacklist")
+					s.send(choix1.encode())
+					black='go'
+					nom_blackliste=''
+
+					while black=='go' and nom_blackliste !='retour' :
+
+						nom_blackliste = s.recv(32).decode()
+						print("L'utilisateur blacklisté est : ", nom_blackliste)
+						verifBlacklist(nom_blackliste)
+						if verifBlacklist(nom_blackliste) == 0 :
+							print("Utilisateur dans blackliste")
+							a='oui'
+							s.send(a.encode())
+
+							delet=s.recv(64).decode()
+							delet=delet.split(' ')
+							print(delet)
+
+							if delet[0] == 'delet' and len(delet)==3 :
+								a='okDelet'
+								s.send(a.encode())
+								print("Vous allez effacer l'utilisateur "+delet[2]+" de la blackliste")
+								
+
+
+
+
 				else :
 					choix1="Ce choix n'est pas possible"
 					s.send(choix1.encode())
@@ -224,23 +269,29 @@ def SIGNUP():
 		s.send(user1.encode())
 
 
-#SIGNUP()
+SIGNUP()
 print("Fin serveur")
+print("")
+print("")
 
-print(lecture_fichier('passwordMed.txt'))
+
+"""print(lecture_fichier('passwordMed.txt'))
+print("")
+print("")
 
 print("Alo")
 a=verification_nom_utilistaeur('Alo', 'passwordMed.txt')
 print(a)
+print("")
+print("")
 
 print("Paul")
 a=verification_nom_utilistaeur('Paul', 'passwordMed.txt')
 print(a)
+print("")
+print("")
 
-print("Roger")
-a=verification_nom_utilistaeur('Roger', 'passwordMed.txt')
-print(a)
 
 print("Aller")
 a=verification_nom_utilistaeur('Aller', 'passwordMed.txt')
-print(a)
+print(a)"""

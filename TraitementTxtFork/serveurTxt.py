@@ -41,7 +41,7 @@ def verification_nom_utilistaeur(nom, fichier):
 def failPassword(nom):
 
 	f = open("blacklist.txt",'a')
-	f.write(nom+";")
+	f.write(nom)
 
 
 ## Fonction pour verifier si une personne n'est pas dans la blackliste #####

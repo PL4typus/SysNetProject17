@@ -34,7 +34,7 @@ if user1 == "admin" :
 
 	mdp_admin1=''
 	while mdp_admin1 != 'correct' :
-		mdp_admin=input("mot de passe administrateur : ")
+		mdp_admin=getpass("mot de passe administrateur : ")
 		s.send(mdp_admin.encode())
 		mdp_admin1=s.recv(16).decode()
 		print("reponse : " ,mdp_admin1)
@@ -156,6 +156,21 @@ if user1 == "admin" :
 					else :
 						service_erreur=s.recv(64).decode()
 						print(service_erreur)
+				elif choix1=='blacklist' :
+					nom_blackliste=input("Utilisateur blacklisté : ")
+					s.send(nom_blackliste.encode())
+					a=s.recv(16).decode()
+					if a == 'oui' :
+						print("Cet utilisateur est dans la blackliste ")
+						print("Pour retirer cet utilisateur de la blackliste taper la commande <delet nom_utilisateur>")
+						delet=input(">> ")
+						s.send(delet.encode())
+
+						ok=s.recv(16).decode()
+						if ok='okDelet':
+							print("Vous allez effacer l'utilisateur "+delet[1]+" de la blackliste")
+
+
 
 				else :
 					print(choix1)
@@ -163,6 +178,6 @@ if user1 == "admin" :
 else :
 	print("nop pas admin")
 
-print("==================================================")
+print("================================================================")
 print("					Fin de connexion")
-print("==================================================")
+print("================================================================")
