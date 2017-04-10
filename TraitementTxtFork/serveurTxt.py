@@ -25,7 +25,6 @@ def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	l=fo.splitlines()
 	for i in range(len(l)) :
 		l[i] = l[i].split(':')
-	l.pop()
 	f.close()
 	return l
 
@@ -80,16 +79,19 @@ def LOGIN(conn):
 			if service == "Medecin":
 				DROIT="M"
 				l=lecture_fichier("passwordMed.txt")
+				print(l)
 				metier = False
 				conn.send(b"1")
 			elif service == "Infirmier":
 				DROIT="INF"
 				l=lecture_fichier("passwordInf.txt")
+				print(l)
 				metier = False
 				conn.send(b"2")
 			elif service == "Interne":
 				DROIT="I"
 				l=lecture_fichier("passwordInt.txt")
+				print(l)
 				metier = False
 				conn.send(b"3")
 			else:
