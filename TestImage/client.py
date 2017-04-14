@@ -4,8 +4,8 @@
 import socket
 import os
 
-localhost = '127.0.0.1'
-port = 6262
+localhost = '172.16.162.128'
+port = 6263
 BUFFER_SIZE=100
 
 # Set up a TCP/IP socket
@@ -90,6 +90,7 @@ while msg_envoye != ("EXIT"):
 
 	elif msg_envoye=="v":
 		print("Je vais visionner")
+		os.popen("gvncviewer "+localhost+":0")
 
 	else:
 		print(msg_envoye,"3")

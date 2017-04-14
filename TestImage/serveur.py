@@ -3,9 +3,10 @@
 
 import socket
 import os
+import signal
 
 TCP_IP = '172.16.162.128'
-TCP_PORT=6262
+TCP_PORT=6263
 BUFFER_SIZE=100
 
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,7 +19,9 @@ conn, addr = s.accept()
 print ("Connection adresse:",addr)
 
 while 1:
-
+	print("----------------------------------------------------------------")
+	print ("\n\t<<<<<<<<<<<Bienvenu sur le serveur de test>>>>>>>>>>>>")
+	
 	data = conn.recv(BUFFER_SIZE)
 	data=data.decode()
 
@@ -79,12 +82,15 @@ while 1:
 
 	elif data=="v":
 		print("Je vais visionner")
-
+		os.popen("x11vnc -many -rfbauth -viewonly ~/.vnc_passwd")
+		os.popen("eog -f image/BigPanda.jpg")
 		
-
 	else:
 		print ("received data:", data)
-		
+
+
+print ("\n\t<<<<<<<<<<Deconnexion du serveur de test>>>>>>>>>>>>\n")
+print("----------------------------------------------------------------")
 
 
 
