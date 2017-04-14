@@ -403,9 +403,9 @@ def LOGIN(conn):
 						conn.send(choix1.encode())
 						print ("Ce n'est pas un bon choix")
 
-		else :
-			user1="Commande inconnue"
-			conn.send(user1.encode())
+			else :
+				user1="Commande inconnue"
+				conn.send(user1.encode())
 
 
 	return DROIT
