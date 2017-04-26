@@ -239,11 +239,11 @@ while decision!= "exit":
 
 
 	elif decision=="admin":
-		print("raboule ton nom")
+		print("Donnez votre nom")
 		saisie=""
 		user=input("Utilisateur : ")
 		s.send(user.encode())
-		print("lest's go administrateur donne ton code !")
+		print("Ecrivez votre mot de passe")
 		user1=s.recv(32).decode()
 		print(user1)
 
@@ -276,6 +276,8 @@ while decision!= "exit":
 				s.send(choix.encode())
 
 				if choix=="fin" :
+					fin = '1' 
+					s.send(fin.encode())
 					break
 
 				else :
