@@ -6,8 +6,16 @@ import socket,sys,os
 from getpass import getpass
 import hashlib
 
-TCP_IP  = '127.0.0.1'
-TCP_PORT = 6264
+if sys.argv[1]:
+    TCP_IP =sys.argv[1]
+else: 
+    TCP_IP = '127.0.0.1'
+
+if sys.argv[2]:
+    TCP_PORT = int(sys.argv[2])
+else:
+    TCP_PORT = 6224
+
 BUFFER_SIZE = 2048
 
 s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
