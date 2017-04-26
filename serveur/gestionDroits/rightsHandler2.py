@@ -16,9 +16,9 @@ def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 
 
 def rightsManager(Droit,user):
-    PATH_INF="/home/squirrel/Documents/projetreseau17/Authentification/passwordInf.txt"
-    PATH_INT="/home/squirrel/Documents/projetreseau17/Authentification/passwordInt.txt"
-    PATH_MED="/home/squirrel/Documents/projetreseau17/Authentification/passwordMed.txt"
+    PATH_INF="/home/squirrel/Documents/projets/NETWORK/projetreseau17/Authentification/passwordInf.txt"
+    PATH_INT="/home/squirrel/Documents/projets/NETWORK/projetreseau17/Authentification/passwordInt.txt"
+    PATH_MED="/home/squirrel/Documents/projets/NETWORK/projetreseau17/Authentification/passwordMed.txt"
     PATH_DROITS_Inf="fichier_droitsInf.plp"
     PATH_DROITS_Int="fichier_droitsInt.plp"
     tab_droits={}
@@ -80,11 +80,13 @@ def rightsManager(Droit,user):
                             di_verdict[t_verdict[i][0]]=t_verdict[i][1]
                     for key in di_verdict.keys():
                         if key not in rights[saved_i]:
-                                rights[saved_i].append()
+                                rights[saved_i]=(di_verdict.get(key))
                         for i in range(len(rights[saved_i])):
                             if rights[saved_i][i]==key:
+                                print(rights[saved_i][i],rights[saved_i][i+1])
                                 rights[saved_i][i+1]=di_verdict.get(key,"r")
-
+                    # j'aurais du mettre des commentaires je sais plus trop ce que j'ai voulu faire
+                    print(di_verdict)
                     print(rights)
 
 
@@ -93,20 +95,9 @@ def rightsManager(Droit,user):
 
 
 
+           
 
 
 
-
-                    ls= os.popen("ls "+user ).read()
-
-                    while fich not in ls:
-                        print("Entrez un nom de fichier valide:")
-                        fich =input(">>>") # conn_client.recv().decode()
-                    print("Vous avez choisi ", fich)
-
-
-
-
-
-rightsManager("M","/home/squirrel/Documents/projetreseau17/TraitementTxtFork/user")
+rightsManager("M","/home/squirrel/Documents/projets/NETWORK/projetreseau17/TraitementTxtFork/user")
 
