@@ -30,6 +30,8 @@ def PlsrLignes ():
 			a = a + "\n"+str(b)
 	return a
 
+DROIT = ''
+
 while decision!= "exit":
 	print("=====================================================================================")
 	print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -60,12 +62,15 @@ while decision!= "exit":
 				print (data)
 				if data == "1":
 					print("Vous etes un Médecin")
+					DROIT='M'
 					service=False
 				elif data == "2":
 					print("Vous etes un Infirmier")
+					DROIT=''
 					service=False
 				elif data == "3":
 					print("Vous etes un Interne")
+					DROIT=''
 					service=False
 				else:
 
@@ -113,6 +118,8 @@ while decision!= "exit":
 					verrouille = False
 				else:
 					print("Mot de passe incorrect")
+
+
 		while 1 :
 			cmd=input("Saisir la commande ")
 			l = cmd.split(" ")
@@ -130,24 +137,28 @@ while decision!= "exit":
 					print ("Voici l'affichage du fichier que vous voulez editer :\n")
 					rep=s.recv(BUFFER_SIZE)
 					rep = rep.decode()
-					if rep != "1" :
-						print (rep)
-						num = "8"
-						while num < "0" or num > "7" :
-							num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
-						s.send(num.encode())
-						if int(num) >= 3 and int(num) <= 6 :
-							print("Ecrivez ce que vous voulez ecrire dans ce champs : ")
-							edit = PlsrLignes()
+					if DROIT == 'M':
+						rep = rep.decode()
+						if rep != "1" :
+							print (rep)
+							num = "8"
+							while num < "0" or num > "7" :
+								num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
+							s.send(num.encode())
+							if int(num) >= 3 and int(num) <= 6 :
+								print("Ecrivez ce que vous voulez ecrire dans ce champs : ")
+								edit = PlsrLignes()
+							else :
+								edit=input("Ecrivez ce que vous voulez ecrire dans ce champs : ")
+							s.send(edit.encode())
+							print ("Voici l'affichage du fichier après edition :\n")
+							rep=s.recv(BUFFER_SIZE)
+							print (rep.decode())
 						else :
-							edit=input("Ecrivez ce que vous voulez ecrire dans ce champs : ")
-						s.send(edit.encode())
-						print ("Voici l'affichage du fichier après edition :\n")
-						rep=s.recv(BUFFER_SIZE)
-						print (rep.decode())
-					else :
+							print (rep)
+							print ("Erreur le fichier ", l[1], " n'existe pas\n")
+					else:
 						print (rep)
-						print ("Erreur le fichier ", l[1], " n'existe pas\n")
 
 			elif l[0]=="creer" :
 				if len(l) < 2 :
@@ -156,41 +167,44 @@ while decision!= "exit":
 					s.send(cmd.encode())
 					rep = s.recv(BUFFER_SIZE)
 					rep=rep.decode()
-					if rep == "0":
-						ecrase = input("Un fichier du même nom existe déjà voulez vous l'écraser ? (non:0/oui:1)\n")
-					if (rep != "0") or ecrase==1 :
-						print ("\nEntrez les informations concernant le patient\n")
-						nom=input("Saisir le nom : ")
-						nom=str(nom)+" "
-						s.send(nom.encode())
-						prenom=input("Saisir le prenom : ")
-						prenom=str(prenom)+" "
-						s.send(prenom.encode())
-						age=input("Saisir l'age: ")
-						age=str(age)+" "
-						s.send(age.encode())
-						print("Saisir ses allergies (§ pour terminer): ")
-						aller=PlsrLignes()
-						s.send(aller.encode())
-						print("Saisir ses symptomes (§ pour terminer): ")
-						symp= PlsrLignes()
-						s.send(symp.encode())
-						print("Saisie du diagnostique (§ pour terminer): ")
-						diag=PlsrLignes()
-						s.send(diag.encode())
+					if DROIT == 'M':
+						if rep == "0":
+							ecrase = input("Un fichier du même nom existe déjà voulez vous l'écraser ? (non:0/oui:1)\n")
+						if (rep != "0") or ecrase==1 :
+							print ("\nEntrez les informations concernant le patient\n")
+							nom=input("Saisir le nom : ")
+							nom=str(nom)+" "
+							s.send(nom.encode())
+							prenom=input("Saisir le prenom : ")
+							prenom=str(prenom)+" "
+							s.send(prenom.encode())
+							age=input("Saisir l'age: ")
+							age=str(age)+" "
+							s.send(age.encode())
+							print("Saisir ses allergies (§ pour terminer): ")
+							aller=PlsrLignes()
+							s.send(aller.encode())
+							print("Saisir ses symptomes (§ pour terminer): ")
+							symp= PlsrLignes()
+							s.send(symp.encode())
+							print("Saisie du diagnostique (§ pour terminer): ")
+							diag=PlsrLignes()
+							s.send(diag.encode())
 
-						print("Saisie des commentaires (§ pour terminer): ")
-						com = PlsrLignes()
-						s.send(com.encode())
+							print("Saisie des commentaires (§ pour terminer): ")
+							com = PlsrLignes()
+							s.send(com.encode())
 
-						hop=input("Saisie de la date d'entrée à l'hôpital: ")
-						hop=str(hop)+" "
-						s.send(hop.encode())
-					else :
-						err = "ERREUR"
-						s.send(err.encode())
-					print("Fin de la saisie")
-
+							hop=input("Saisie de la date d'entrée à l'hôpital: ")
+							hop=str(hop)+" "
+							s.send(hop.encode())
+						else :
+							err = "ERREUR"
+							s.send(err.encode())
+						print("Fin de la saisie")
+				
+					else:
+						print(rep)
 			elif l[0]=="signer":
 				s.send(cmd.encode())
 				erreur="ERR"
@@ -221,6 +235,7 @@ while decision!= "exit":
 				print("clear :		efface votre page ")
 				print("historique :		affiche l'historique de vos commandes ")
 				print("whereis :		trouve un fichier (use : whereis nomfichier) ")
+				print("fin:		quitte et revient aux login")
 			elif l[0]=="clear":
 				print ("\033[H\033[2J")
 
@@ -228,9 +243,10 @@ while decision!= "exit":
 				print (historique)
 
 
-			elif l[0] == "1" :
+			elif l[0] == "fin" :
 				historique = " "
-				s.send(cmd.encode())
+				fin='1'
+				s.send(fin.encode())
 				break
 			else :
 				s.send(cmd.encode())
@@ -239,29 +255,25 @@ while decision!= "exit":
 
 
 	elif decision=="admin":
-		print("raboule ton nom")
 		saisie=""
 		user=input("Utilisateur : ")
 		s.send(user.encode())
-		print("lest's go administrateur donne ton code !")
 		user1=s.recv(32).decode()
-		print(user1)
 
 		if user1 == "admin" :
 			mdp_admin1=''
 			while mdp_admin1 != 'correct' :
-				mdp_admin=getpass("mot de passe administrateur : ")
+				mdp_admin=getpass("Entrez votre mot de passe administrateur : ")
 				mdp_admin = hashlib.sha256(mdp_admin.encode()).hexdigest()
-				print(mdp_admin)
 				s.send(mdp_admin.encode())
 				mdp_admin1=s.recv(16).decode()
-				print("reponse : " ,mdp_admin1)
 
 				if mdp_admin1=='Faux' :
 					print(mdp_admin1+", mauvais mot de passe. Veuillez réessayez.")				
 
 				elif mdp_admin1=='correct' :
 					print("Code bon")
+					print("Vous êtes connecté en tant qu'administrateur.")
 					tout=True
 
 				else :
@@ -269,20 +281,20 @@ while decision!= "exit":
 
 			while tout :
 
-				print("Vous êtes connecté en tant qu'administrateur.")
-				print("Voulez vous:\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
+				print("Voulez vous :\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
 				print(" ")
 				choix = input(">> ") #signup ou blacklist
 				s.send(choix.encode())
 
 				if choix=="fin" :
+					fin = '1' 
+					s.send(fin.encode())
 					break
 
 				else :
 					choix1 = s.recv(32).decode()
 					if choix1 == "signup1" : #le serveur montre qu'il suit vers signup
-						print(choix1)
-						service = input("Sous quel service voulez vous enregistrer le nouvel utilisateur ? (Medecin, Infirmier, Interne)? ")
+						service = input("Sous quel service voulez vous enregistrer le nouvel utilisateur ? (Medecin, Infirmier, Interne)? \n >> ")
 						s.send(service.encode())
 
 						if service == 'Medecin' :
@@ -312,7 +324,7 @@ while decision!= "exit":
 							
 								else:
 									print(clé)
-									print ("Inscription impossible")
+									print ("Clé erronée, inscription impossible \n")
 							
 
 						elif service == 'Infirmier' :
@@ -342,7 +354,7 @@ while decision!= "exit":
 									
 								else:
 									print(clé)
-									print ("Cle errone, inscription impossible")
+									print ("Clé erronée, inscription impossible \n")
 
 						elif service == 'Interne' :
 							service1=s.recv(32).decode()
@@ -371,7 +383,7 @@ while decision!= "exit":
 									
 								else:
 									print(clé)
-									print ("Cle errone, inscription impossible")
+									print ("Clé erronée, inscription impossible \n")
 
 						else :
 							service_erreur=s.recv(64).decode()
@@ -386,12 +398,12 @@ while decision!= "exit":
 							a=s.recv(16).decode()
 
 							if a=='stop':
-									print("Vous voulez finir les modifs blacklist")
+									print("Vous avez fini les modifications sur la blacklist")
 									black='stop'
 
 							elif a == 'oui' :
-								print("Cet utilisateur est dans la blackliste ")
-								print("Pour retirer cet utilisateur de la blacklist taper la commande <delet nom_utilisateur>")
+								print("Cet utilisateur est dans la blacklist")
+								print("Pour retirer cet utilisateur de la blacklist taper la commande \n \t\t<delet nom_utilisateur>")
 								delet=input(">> ")
 								s.send(delet.encode())
 
@@ -401,11 +413,10 @@ while decision!= "exit":
 									b='dansDelet'
 									s.send(a.encode())
 									a=s.recv(64).decode()
-									print(a)
-									print("L'utilisateur peut de nouveau se connecter")
+									print("L'utilisateur peut de nouveau se connecter, il n'est plus dans la blacklist")
 
 								elif ok=='stop':
-									print("Vous voulez finir les modifs blacklist")
+									print("Vous avez fini les modifications su la blacklist")
 									black='stop'
 
 								else :
@@ -415,7 +426,7 @@ while decision!= "exit":
 								print("Cet utilisateur n'est pas dans la Blacklist")
 
 							else : 
-								print("Erreur aucun truc bon....")
+								print("Erreur....")
 
 
 

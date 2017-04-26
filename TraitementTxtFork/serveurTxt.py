@@ -33,6 +33,7 @@ def lecture_fichier(fichier) : #[[nom1,mdp1],[nom2,mdp2]....]
 	f.close()
 	return l
 
+## Fonction pour verifier si l'utilisateur existe dans le fichier ###########
 def verification_nom_utilistaeur(nom, fichier):
 	liste = lecture_fichier(fichier)
 	for e in liste :
@@ -164,9 +165,7 @@ def LOGIN(conn):
 
 		elif decision=="admin":
 			DROIT="A"
-			print(decision)
 			user=conn.recv(30).decode()
-			print("l'utilisateur est : ", user)
 			if user == "admin" :
 				user1="admin"
 				conn.send(user1.encode())
@@ -175,15 +174,11 @@ def LOGIN(conn):
 				mdp_admin1 =''
 				while mdp_admin1 != 'correct' :
 					mdp_admin=conn.recv(64).decode()
-					print("le mot de passe hasher est :"+mdp_admin)
 
 					l=lecture_fichier("admin.txt")
-					print(l)
 					for e in l :
-						print(e)
-						print("mot de passe devrai etre : "+e[1])
 						if e[1]==mdp_admin:
-							print("mdp correct !")
+							print("Mot de passe correct")
 							mdp_admin1='correct'
 							conn.send(mdp_admin1.encode())
 							tout =True
@@ -196,7 +191,6 @@ def LOGIN(conn):
 				while tout :
 
 					choix=conn.recv(32).decode()
-					print(choix)
 
 					if choix=='fin' :
 						tout=False
@@ -204,7 +198,6 @@ def LOGIN(conn):
 
 					elif choix == "signup" :
 						choix1 = "signup1"
-						print("go signup")
 						conn.send(choix1.encode())
 
 						service = conn.recv(32).decode()
@@ -212,7 +205,6 @@ def LOGIN(conn):
 
 						if service == 'Medecin' :
 							service1="okMed"
-							print("go signup Medecin")
 							conn.send(service1.encode())
 
 							saisie=conn.recv(32).decode()
@@ -244,7 +236,7 @@ def LOGIN(conn):
 							else:
 								clé="Pas la bonne clé pour le service médecin"
 								conn.send(clé.encode())
-								print ("Cle errone, inscription impossible")
+								print ("Clé erronée, inscription impossible")
 						
 
 						elif service == 'Infirmier' :
@@ -276,9 +268,9 @@ def LOGIN(conn):
 								print("Fin enregistrement")
 							
 							else:
-								clé="Pas la bonne clé pour le service Infirmier"
+								clé="Ce n'est pas la bonne clé pour le service Infirmier"
 								conn.send(clé.encode())					
-								print ("Inscription impossible")
+								print ("Clé erronée, inscription impossible")
 
 						elif service == 'Interne' :
 							service1="okInt"
@@ -311,7 +303,8 @@ def LOGIN(conn):
 							
 							else:
 								clé="Pas la bonne clé pour le service Interne."
-								print ("Inscription impossible")
+								conn.send(clé.encode())					
+								print ("Clé erronée, inscription impossible")
 
 						else :
 							service_erreur="Ce service n'existe pas"
@@ -320,7 +313,6 @@ def LOGIN(conn):
 
 					elif choix=="blacklist" :
 						choix1 = "blacklist"
-						print("go blacklist")
 						conn.send(choix1.encode())
 						black='go'
 						nom_blackliste=''
@@ -340,37 +332,32 @@ def LOGIN(conn):
 							else :
 								verifBlacklist(nom_blackliste)
 								if verifBlacklist(nom_blackliste) == 0 :
-									print("Utilisateur dans blacklist")
+									print("L'Utilisateur est dans la blacklist")
 									a='oui'
 									conn.send(a.encode())
 
 									delet=conn.recv(64).decode()
 									delet=delet.split(' ')
-									print(delet[0])
-									print(delet[1])
 
 									if delet[0] == 'delet' and len(delet)==2 and verifBlacklist(delet[1])==0 and delet[0]!='fin' :
 										a='okDelet'
 										conn.send(a.encode())
-										print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
+										print("L'Administrateur a effacé l'utilisateur "+delet[1]+" de la blacklist")
 										b=conn.recv(16).decode()
-										print(b)
 
 										f=open("blacklist.txt",'r')
 										lecture=f.read(1024)
 										lecture=lecture.rstrip()
 										bl=lecture.split(";")
 										bl.pop()
-										print(bl)
 										bl.remove(delet[1])
-										print(bl)
 										f.close()
 
 										f=open("blacklist.txt",'w')
 										for e in bl:
 											f.write(e+";")
 										
-										a='Utilistateur enlevé de la Blacklist'
+										a='Utilistateur enlevé de la blacklist'
 										conn.send(a.encode())
 										f.close()
 										
@@ -384,21 +371,19 @@ def LOGIN(conn):
 										conn.send(a)
 
 								elif verifBlacklist(nom_blackliste) == 1 :
-									print("L'utilisateur n'est pas dans la Blacklist")
+									print("L'utilisateur n'est pas dans la blacklist")
 									a='non'
 									conn.send(a.encode())
 
 								else :
-									print("Erreur !!")
+									print("Erreur")
 									a='erreur'
 									conn.send(a.encode())
-						print("fin boucle while blacklist")
 
 
 
 
 					else :
-						print("On est dans l'avant dernier else")
 						choix1="Ce choix n'est pas possible"
 						conn.send(choix1.encode())
 						print ("Ce n'est pas un bon choix")
@@ -502,23 +487,30 @@ def command_checker(command, status,conn, ip, port, dossier):
 					reponse = "Nouveau repertoire courant : "+dossier
 					conn.send(reponse.encode())
 	elif command[0] == "cp" :
-		if len(command)<3:
-			r="Erreur: argument manquant"
-			conn.send(r.encode())
-		else :
-
-			if dossier == "user" and command[2] ==".." :
-				r = "Vous n'avez pas l'autorisation de faire cela"
+		if status == "M":
+			if len(command)<3:
+				r="Erreur: argument manquant"
 				conn.send(r.encode())
 			else :
-				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
-				rep = "Commande cp effectuée\n"+rep.read()
-				conn.send(rep.encode())
+
+				if dossier == "user" and command[2] ==".." :
+					r = "Vous n'avez pas l'autorisation de faire cela"
+					conn.send(r.encode())
+				else :
+					rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
+					rep = "Commande cp effectuée\n"+rep.read()
+					conn.send(rep.encode())
+		else :
+			reponse="Vous n'avez pas l'autorisation de copier des fichiers!"
+			conn.send(reponse.encode())
 
 
 	elif command[0] == "edit": #nom du fichier
-
-		EDIT(conn, command[1],dossier)
+		if status == "M":
+			EDIT(conn, command[1],dossier)
+		else:
+			reponse="Vous n'avez pas l'autorisation d'éditer des fichiers!"
+			conn.send(reponse.encode())
 	elif command[0] == "whereis": #nom du fichier
 		if len(command)<2:
 			r="Erreur: argument manquant"
@@ -559,8 +551,12 @@ def command_checker(command, status,conn, ip, port, dossier):
 			
 
 	elif command[0] == "creer": #nom du fichier
-
-		CREER(conn,command[1],dossier)
+		if status == "M":
+			CREER(conn,command[1],dossier)
+		else:
+			reponse="Vous n'avez pas l'autorisation de creer des fichiers!"
+			conn.send(reponse.encode())
+		
 
 	elif command[0]== "signer":
 
