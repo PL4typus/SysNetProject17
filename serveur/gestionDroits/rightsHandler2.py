@@ -51,6 +51,7 @@ def rightsManager(Droit,user):
                     f = open(PATH_DROITS_Inf,"r")
                     rights=f.read().splitlines()
                     f.close()
+                    already=False
                     saved_i=0
                     for i in range(len(rights)):
                         rights[i]=rights[i].split(";")
@@ -58,9 +59,18 @@ def rightsManager(Droit,user):
                         if rights[i][0]==adoube:
                             print("Par defaut, ",rights[i][2])
                             saved_i=i
-                            for j in range(len(rights[i])):
-                                if j%2==1:
-                                    print("Pour le fichier ",rights[i][j],": ",rights[i][j+1])
+                            already=True
+                    if already==False:
+                        i=i+1
+                        saved_i=i
+                        liste=[[adoube,"default",rights[0][2]]]
+                        rights.extend(liste)
+
+                    for j in range(len(rights[saved_i])):
+                        if j%2==1:
+                            print("Pour le fichier ",rights[saved_i][j],": ",rights[saved_i][j+1])
+
+
                     print("Entrez un nom de fichier puis les nouveaux droits. Ex: ficheMichu rw")
                     print("r : droits de lecture \t w : droits d'écriture (la personne verra le contenu du fichier lors de l'édition")
                     print("Entrez § pour terminer")
@@ -85,9 +95,20 @@ def rightsManager(Droit,user):
                             if rights[saved_i][i]==key:
                                 print(rights[saved_i][i],rights[saved_i][i+1])
                                 rights[saved_i][i+1]=di_verdict.get(key,"r")
-                    # j'aurais du mettre des commentaires je sais plus trop ce que j'ai voulu faire
-                    print(di_verdict)
-                    print(rights)
+
+                    f = open(PATH_DROITS_Inf,"w")
+                    tampon=""
+                    for i in range(len(rights)):
+                        for j in range(len(rights[i])):
+                            tampon=tampon+rights[i][j]+";"
+                            print(tampon)
+                        tampon=tampon+"\n"
+                        print(tampon)
+                    f.write(tampon)
+
+
+
+
 
 
 
