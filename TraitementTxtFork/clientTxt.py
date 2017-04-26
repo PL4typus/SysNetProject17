@@ -239,29 +239,25 @@ while decision!= "exit":
 
 
 	elif decision=="admin":
-		print("Donnez votre nom")
 		saisie=""
 		user=input("Utilisateur : ")
 		s.send(user.encode())
-		print("Ecrivez votre mot de passe")
 		user1=s.recv(32).decode()
-		print(user1)
 
 		if user1 == "admin" :
 			mdp_admin1=''
 			while mdp_admin1 != 'correct' :
-				mdp_admin=getpass("mot de passe administrateur : ")
+				mdp_admin=getpass("Entrez votre mot de passe administrateur : ")
 				mdp_admin = hashlib.sha256(mdp_admin.encode()).hexdigest()
-				print(mdp_admin)
 				s.send(mdp_admin.encode())
 				mdp_admin1=s.recv(16).decode()
-				print("reponse : " ,mdp_admin1)
 
 				if mdp_admin1=='Faux' :
 					print(mdp_admin1+", mauvais mot de passe. Veuillez réessayez.")				
 
 				elif mdp_admin1=='correct' :
 					print("Code bon")
+					print("Vous êtes connecté en tant qu'administrateur.")
 					tout=True
 
 				else :
@@ -269,8 +265,7 @@ while decision!= "exit":
 
 			while tout :
 
-				print("Vous êtes connecté en tant qu'administrateur.")
-				print("Voulez vous:\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
+				print("Voulez vous :\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
 				print(" ")
 				choix = input(">> ") #signup ou blacklist
 				s.send(choix.encode())
@@ -283,8 +278,7 @@ while decision!= "exit":
 				else :
 					choix1 = s.recv(32).decode()
 					if choix1 == "signup1" : #le serveur montre qu'il suit vers signup
-						print(choix1)
-						service = input("Sous quel service voulez vous enregistrer le nouvel utilisateur ? (Medecin, Infirmier, Interne)? ")
+						service = input("Sous quel service voulez vous enregistrer le nouvel utilisateur ? (Medecin, Infirmier, Interne)? \n >> ")
 						s.send(service.encode())
 
 						if service == 'Medecin' :
@@ -314,7 +308,7 @@ while decision!= "exit":
 							
 								else:
 									print(clé)
-									print ("Inscription impossible")
+									print ("Clé erronée, inscription impossible \n")
 							
 
 						elif service == 'Infirmier' :
@@ -344,7 +338,7 @@ while decision!= "exit":
 									
 								else:
 									print(clé)
-									print ("Cle errone, inscription impossible")
+									print ("Clé erronée, inscription impossible \n")
 
 						elif service == 'Interne' :
 							service1=s.recv(32).decode()
@@ -373,7 +367,7 @@ while decision!= "exit":
 									
 								else:
 									print(clé)
-									print ("Cle errone, inscription impossible")
+									print ("Clé erronée, inscription impossible \n")
 
 						else :
 							service_erreur=s.recv(64).decode()
@@ -388,12 +382,12 @@ while decision!= "exit":
 							a=s.recv(16).decode()
 
 							if a=='stop':
-									print("Vous voulez finir les modifs blacklist")
+									print("Vous avez fini les modifications sur la blacklist")
 									black='stop'
 
 							elif a == 'oui' :
-								print("Cet utilisateur est dans la blackliste ")
-								print("Pour retirer cet utilisateur de la blacklist taper la commande <delet nom_utilisateur>")
+								print("Cet utilisateur est dans la blacklist")
+								print("Pour retirer cet utilisateur de la blacklist taper la commande \n \t\t<delet nom_utilisateur>")
 								delet=input(">> ")
 								s.send(delet.encode())
 
@@ -403,11 +397,10 @@ while decision!= "exit":
 									b='dansDelet'
 									s.send(a.encode())
 									a=s.recv(64).decode()
-									print(a)
-									print("L'utilisateur peut de nouveau se connecter")
+									print("L'utilisateur peut de nouveau se connecter, il n'est plus dans la blacklist")
 
 								elif ok=='stop':
-									print("Vous voulez finir les modifs blacklist")
+									print("Vous avez fini les modifications su la blacklist")
 									black='stop'
 
 								else :
@@ -417,7 +410,7 @@ while decision!= "exit":
 								print("Cet utilisateur n'est pas dans la Blacklist")
 
 							else : 
-								print("Erreur aucun truc bon....")
+								print("Erreur....")
 
 
 
