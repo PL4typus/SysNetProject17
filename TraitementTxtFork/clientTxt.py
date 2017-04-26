@@ -10,7 +10,7 @@ import hashlib
 
 TCP_IP ='127.0.0.1'
 
-TCP_PORT = 6262
+TCP_PORT = 6264
 
 BUFFER_SIZE = 1024
 historique = " "
@@ -35,7 +35,7 @@ DROIT = ''
 while decision!= "exit":
 	print("=====================================================================================")
 	print("<<<<<<<<<<<<<<<<<<<<<<<<<Bienvenu sur le serveur de l'hopital>>>>>>>>>>>>>>>>>>>>>>>>")
-	print("Voulez vous:\n\t¤Vous connectez en tant qu'Administrateur (admin) ?\n\t¤Vous connecter(login)?\n\t¤Quitter(exit)?")
+	print("Voulez vous:\n\t¤ Vous connectez en tant qu'Administrateur (admin) ?\n\t¤ Vous connecter(login)?\n\t¤ Quitter(exit)?")
 
 
 	service=True
@@ -53,7 +53,7 @@ while decision!= "exit":
 		while tout:
 			user=''
 			while service:
-				saisie=input("Quel service? (Medecin, Infirmier, Interne)")
+				saisie=input("Quel service ? (Medecin, Infirmier, Interne) \n >> ")
 				saisie=saisie.encode()
 				s.send(saisie)
 
@@ -61,15 +61,15 @@ while decision!= "exit":
 				data=data.decode()
 				print (data)
 				if data == "1":
-					print("Vous etes un Médecin")
+					print("Vous etes un Médecin \n")
 					DROIT='M'
 					service=False
 				elif data == "2":
-					print("Vous etes un Infirmier")
+					print("Vous etes un Infirmier \n")
 					DROIT=''
 					service=False
 				elif data == "3":
-					print("Vous etes un Interne")
+					print("Vous etes un Interne \n")
 					DROIT=''
 					service=False
 				else:
@@ -78,13 +78,12 @@ while decision!= "exit":
 
 			while session and user != 'retour':
 
-				user=input("Utilisateur: ")
+				user=input("Utilisateur : ")
 				user=user.encode()
 				s.send(user)
 
 				data2=s.recv(30)
 				data2=data2.decode()
-				print(data2)
 
 				if data2 == "1":
 					session=False
@@ -114,7 +113,7 @@ while decision!= "exit":
 				verif=verif.decode()
 				print (verif)
 				if verif == "1":
-					print("Session ouverte")
+					print("Session ouverte \n")
 					verrouille = False
 				else:
 					print("Mot de passe incorrect")
@@ -281,15 +280,17 @@ while decision!= "exit":
 
 			while tout :
 
-				print("Voulez vous :\n\t¤Enregistrer un nouvel utilisateur (signup) ?\n\t¤Modifier la blacklist (blacklist) ?\n\t¤Quitter (fin)?")
+				print("Voulez vous :\n\t¤ Enregistrer un nouvel utilisateur (signup) ?\n\t¤ Modifier la blacklist (blacklist) ?\n\t¤ Quitter (fin)?")
 				print(" ")
 				choix = input(">> ") #signup ou blacklist
 				s.send(choix.encode())
 
 				if choix=="fin" :
+					choix1 = s.recv(32).decode()
 					fin = '1' 
 					s.send(fin.encode())
 					break
+					
 
 				else :
 					choix1 = s.recv(32).decode()

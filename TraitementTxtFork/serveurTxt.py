@@ -7,7 +7,7 @@ from getpass import getpass
 import hashlib
 
 TCP_IP  = '127.0.0.1'
-TCP_PORT = 6262
+TCP_PORT = 6264
 BUFFER_SIZE = 2048
 
 s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -87,19 +87,16 @@ def LOGIN(conn):
 				if service == "Medecin":
 					DROIT="M"
 					l=lecture_fichier("passwordMed.txt")
-					print(l)
 					metier = False
 					conn.send(b"1")
 				elif service == "Infirmier":
 					DROIT="INF"
 					l=lecture_fichier("passwordInf.txt")
-					print(l)
 					metier = False
 					conn.send(b"2")
 				elif service == "Interne":
 					DROIT="I"
 					l=lecture_fichier("passwordInt.txt")
-					print(l)
 					metier = False
 					conn.send(b"3")
 				else:
@@ -114,13 +111,12 @@ def LOGIN(conn):
 				if user == "retour" :
 					metier = True
 					conn.send(b"return")
-					print ("Boucle retour")
 					break
 				else :
 
 					for i in range(len(l)):
 						if user == l[i][0]:
-							print ( "j'ai trouvé",user)
+							print ( "j'ai trouvé ",user)
 							if verifBlacklist(user) == 1:
 								conn.send(b"1")
 								session = False
@@ -130,7 +126,7 @@ def LOGIN(conn):
 
 					if session == True:
 						conn.send(b"0")
-						print ( "je n'ai pas trouvé ou blacklisté",user)
+						print ( "je n'ai pas trouvé ou blacklisté ",user)
 			while verrouille and tout == False :
 
 				verif=conn.recv(20)
@@ -142,7 +138,7 @@ def LOGIN(conn):
 
 				if time == 0:
 					#s.send(b"0")
-					print("plus d'essai")
+					print("Plus d'essai")
 					tout = True
 					metier=True
 					session=True
@@ -193,7 +189,10 @@ def LOGIN(conn):
 					choix=conn.recv(32).decode()
 
 					if choix=='fin' :
+						choix1='fin'
+						conn.send(choix1.encode())
 						tout=False
+						print("Fin administrateur")
 						break
 
 					elif choix == "signup" :
@@ -379,9 +378,6 @@ def LOGIN(conn):
 									print("Erreur")
 									a='erreur'
 									conn.send(a.encode())
-
-
-
 
 					else :
 						choix1="Ce choix n'est pas possible"
