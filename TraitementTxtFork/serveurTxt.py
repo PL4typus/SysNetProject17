@@ -487,23 +487,30 @@ def command_checker(command, status,conn, ip, port, dossier):
 					reponse = "Nouveau repertoire courant : "+dossier
 					conn.send(reponse.encode())
 	elif command[0] == "cp" :
-		if len(command)<3:
-			r="Erreur: argument manquant"
-			conn.send(r.encode())
-		else :
-
-			if dossier == "user" and command[2] ==".." :
-				r = "Vous n'avez pas l'autorisation de faire cela"
+		if status == "M":
+			if len(command)<3:
+				r="Erreur: argument manquant"
 				conn.send(r.encode())
 			else :
-				rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
-				rep = "Commande cp effectuée\n"+rep.read()
-				conn.send(rep.encode())
+
+				if dossier == "user" and command[2] ==".." :
+					r = "Vous n'avez pas l'autorisation de faire cela"
+					conn.send(r.encode())
+				else :
+					rep=os.popen("cd "+dossier+";cp -b -p "+command[1]+" "+command[2]+" 2>&1")
+					rep = "Commande cp effectuée\n"+rep.read()
+					conn.send(rep.encode())
+		else :
+			reponse="Vous n'avez pas l'autorisation de copier des fichiers!"
+			conn.send(reponse.encode())
 
 
 	elif command[0] == "edit": #nom du fichier
-
-		EDIT(conn, command[1],dossier)
+		if status == "M":
+			EDIT(conn, command[1],dossier)
+		else:
+			reponse="Vous n'avez pas l'autorisation d'éditer des fichiers!"
+			conn.send(reponse.encode())
 	elif command[0] == "whereis": #nom du fichier
 		if len(command)<2:
 			r="Erreur: argument manquant"
@@ -544,8 +551,12 @@ def command_checker(command, status,conn, ip, port, dossier):
 			
 
 	elif command[0] == "creer": #nom du fichier
-
-		CREER(conn,command[1],dossier)
+		if status == "M":
+			CREER(conn,command[1],dossier)
+		else:
+			reponse="Vous n'avez pas l'autorisation de creer des fichiers!"
+			conn.send(reponse.encode())
+		
 
 	elif command[0]== "signer":
 
