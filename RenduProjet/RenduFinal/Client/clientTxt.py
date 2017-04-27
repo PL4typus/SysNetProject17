@@ -64,7 +64,6 @@ while decision!= "exit":
 
 				data=s.recv(10)
 				data=data.decode()
-				print (data)
 				if data == "1":
 					print("Vous etes un Médecin \n")
 					DROIT='M'
@@ -118,6 +117,7 @@ while decision!= "exit":
 				verif=verif.decode()
 				print (verif)
 				if verif == "1":
+					verif=int(verif)
 					print("Session ouverte \n")
 					verrouille = False
 				else:
@@ -125,137 +125,140 @@ while decision!= "exit":
 
 
 		while 1 :
-			cmd=input("Saisir la commande ")
-			l = cmd.split(" ")
-			i = 0
-			maCom = " "
-			while i<len(l) :
-				maCom = maCom+l[i]
-				i = i+1
-			historique = historique +"\n"+ maCom
-			if l[0]== "edit" :
-				if len(l) < 2 :
-					print ("Erreur : argument manquant\nuse : edit nomfichier")
-				else :
-					s.send(cmd.encode())
-					print ("Voici l'affichage du fichier que vous voulez editer :\n")
-					rep=s.recv(BUFFER_SIZE)
-					rep = rep.decode()
-					if DROIT == 'M':
-						rep = rep.decode()
-						if rep != "1" :
-							print (rep)
-							num = "8"
-							while num < "0" or num > "7" :
-								num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
-							s.send(num.encode())
-							if int(num) >= 3 and int(num) <= 6 :
-								print("Ecrivez ce que vous voulez ecrire dans ce champs : ")
-								edit = PlsrLignes()
-							else :
-								edit=input("Ecrivez ce que vous voulez ecrire dans ce champs : ")
-							s.send(edit.encode())
-							print ("Voici l'affichage du fichier après edition :\n")
-							rep=s.recv(BUFFER_SIZE)
-							print (rep.decode())
-						else :
-							print (rep)
-							print ("Erreur le fichier ", l[1], " n'existe pas\n")
-					else:
-						print (rep)
-
-			elif l[0]=="creer" :
-				if len(l) < 2 :
-					print ("Erreur : argument manquant\nuse : creer nomfichier")
-				else :
-					s.send(cmd.encode())
-					rep = s.recv(BUFFER_SIZE)
-					rep=rep.decode()
-					if DROIT == 'M':
-						if rep == "0":
-							ecrase = input("Un fichier du même nom existe déjà voulez vous l'écraser ? (non:0/oui:1)\n")
-						if (rep != "0") or ecrase==1 :
-							print ("\nEntrez les informations concernant le patient\n")
-							nom=input("Saisir le nom : ")
-							nom=str(nom)+" "
-							s.send(nom.encode())
-							prenom=input("Saisir le prenom : ")
-							prenom=str(prenom)+" "
-							s.send(prenom.encode())
-							age=input("Saisir l'age: ")
-							age=str(age)+" "
-							s.send(age.encode())
-							print("Saisir ses allergies (§ pour terminer): ")
-							aller=PlsrLignes()
-							s.send(aller.encode())
-							print("Saisir ses symptomes (§ pour terminer): ")
-							symp= PlsrLignes()
-							s.send(symp.encode())
-							print("Saisie du diagnostique (§ pour terminer): ")
-							diag=PlsrLignes()
-							s.send(diag.encode())
-
-							print("Saisie des commentaires (§ pour terminer): ")
-							com = PlsrLignes()
-							s.send(com.encode())
-
-							hop=input("Saisie de la date d'entrée à l'hôpital: ")
-							hop=str(hop)+" "
-							s.send(hop.encode())
-						else :
-							err = "ERREUR"
-							s.send(err.encode())
-						print("Fin de la saisie")
-				
-					else:
-						print(rep)
-			elif l[0]=="signer":
-				s.send(cmd.encode())
-				erreur="ERR"
-				repDoc=s.recv(BUFFER_SIZE)
-				repDoc=repDoc.decode()
-				print(user)
-				s.send(user)
-				print("Vous pouvez signer les documents suivants:\n")
-				print (repDoc)
-				doc=input("Quel document voulez vous signer?\n>>")
-				if doc not in repDoc:
-					print("Le document n'existe pas")
-					s.send(erreur.encode())
-				else:
-					s.send(doc.encode())
-
-			elif l[0]=="help":
-				print("Voici les commandes :\n")
-				print("ls :		affiche tous les fichiers du repertoire où vous vous trouvez)")
-				print("cat :		affiche le fichier passé en paramètre (use : cat nomFichier)")
-				print("rm :		efface le fichier passé en paramètre (use : rm nomFichier)")
-				print("mkdir :		créé un dossier (use : mkdir nomdossier)")
-				print("cd :		déplacement dans le dossier, mettre .. pour revenir au dossier parent (use : cd nomdossier ou cd ..)")
-				print("cp:		copie un fichier dans un dossier (use : cp nomfichier nomdossier)")
-				print("creer :		créé un fichier (use : creer nomfichier)")
-				print("edit :		édite un fichier (use : edit nomfichier)")
-				print("signer :	signe un fichier ")
-				print("clear :		efface votre page ")
-				print("historique :		affiche l'historique de vos commandes ")
-				print("whereis :		trouve un fichier (use : whereis nomfichier) ")
-				print("fin:		quitte et revient aux login")
-			elif l[0]=="clear":
-				print ("\033[H\033[2J")
-
-			elif l[0]=="historique":
-				print (historique)
-
-
-			elif l[0] == "fin" :
-				historique = " "
-				fin='1'
-				s.send(fin.encode())
+			if verif != 1 :
 				break
+
 			else :
-				s.send(cmd.encode())
-				rep=s.recv(BUFFER_SIZE)
-				print (rep.decode())
+				cmd=input("Saisir la commande ")
+				l = cmd.split(" ")
+				i = 0
+				maCom = " "
+				while i<len(l) :
+					maCom = maCom+l[i]
+					i = i+1
+				historique = historique +"\n"+ maCom
+				if l[0]== "edit" :
+					if len(l) < 2 :
+						print ("Erreur : argument manquant\nuse : edit nomfichier")
+					else :
+						s.send(cmd.encode())
+						print ("Voici l'affichage du fichier que vous voulez editer :\n")
+						rep=s.recv(BUFFER_SIZE)
+						rep = rep.decode()
+						if DROIT == 'M':
+							if rep != "1" :
+								print (rep)
+								num = "8"
+								while num < "0" or num > "7" :
+									num = input("\n\nATTENTION : Quand vous editez un champs vous réecrivez par dessus !\n\nQuelle champs voulez vous editer ? (mettre le n°) : ")
+								s.send(num.encode())
+								if int(num) >= 3 and int(num) <= 6 :
+									print("Ecrivez ce que vous voulez ecrire dans ce champs : ")
+									edit = PlsrLignes()
+								else :
+									edit=input("Ecrivez ce que vous voulez ecrire dans ce champs : ")
+								s.send(edit.encode())
+								print ("Voici l'affichage du fichier après edition :\n")
+								rep=s.recv(BUFFER_SIZE)
+								print (rep.decode())
+							else :
+								print (rep)
+								print ("Erreur le fichier ", l[1], " n'existe pas\n")
+						else:
+							print (rep)
+
+				elif l[0]=="creer" :
+					if len(l) < 2 :
+						print ("Erreur : argument manquant\nuse : creer nomfichier")
+					else :
+						s.send(cmd.encode())
+						rep = s.recv(BUFFER_SIZE)
+						rep=rep.decode()
+						if DROIT == 'M':
+							if rep == "0":
+								ecrase = input("Un fichier du même nom existe déjà voulez vous l'écraser ? (non:0/oui:1)\n")
+							if (rep != "0") or ecrase==1 :
+								print ("\nEntrez les informations concernant le patient\n")
+								nom=input("Saisir le nom : ")
+								nom=str(nom)+" "
+								s.send(nom.encode())
+								prenom=input("Saisir le prenom : ")
+								prenom=str(prenom)+" "
+								s.send(prenom.encode())
+								age=input("Saisir l'age: ")
+								age=str(age)+" "
+								s.send(age.encode())
+								print("Saisir ses allergies (§ pour terminer): ")
+								aller=PlsrLignes()
+								s.send(aller.encode())
+								print("Saisir ses symptomes (§ pour terminer): ")
+								symp= PlsrLignes()
+								s.send(symp.encode())
+								print("Saisie du diagnostique (§ pour terminer): ")
+								diag=PlsrLignes()
+								s.send(diag.encode())
+
+								print("Saisie des commentaires (§ pour terminer): ")
+								com = PlsrLignes()
+								s.send(com.encode())
+
+								hop=input("Saisie de la date d'entrée à l'hôpital: ")
+								hop=str(hop)+" "
+								s.send(hop.encode())
+							else :
+								err = "ERREUR"
+								s.send(err.encode())
+							print("Fin de la saisie")
+					
+						else:
+							print(rep)
+				elif l[0]=="signer":
+					s.send(cmd.encode())
+					erreur="ERR"
+					repDoc=s.recv(BUFFER_SIZE)
+					repDoc=repDoc.decode()
+					print(user)
+					s.send(user)
+					print("Vous pouvez signer les documents suivants:\n")
+					print (repDoc)
+					doc=input("Quel document voulez vous signer?\n>>")
+					if doc not in repDoc:
+						print("Le document n'existe pas")
+						s.send(erreur.encode())
+					else:
+						s.send(doc.encode())
+
+				elif l[0]=="help":
+					print("Voici les commandes :\n")
+					print("ls :		affiche tous les fichiers du repertoire où vous vous trouvez)")
+					print("cat :		affiche le fichier passé en paramètre (use : cat nomFichier)")
+					print("rm :		efface le fichier passé en paramètre (use : rm nomFichier)")
+					print("mkdir :		créé un dossier (use : mkdir nomdossier)")
+					print("cd :		déplacement dans le dossier, mettre .. pour revenir au dossier parent (use : cd nomdossier ou cd ..)")
+					print("cp:		copie un fichier dans un dossier (use : cp nomfichier nomdossier)")
+					print("creer :		créé un fichier (use : creer nomfichier)")
+					print("edit :		édite un fichier (use : edit nomfichier)")
+					print("signer :	signe un fichier ")
+					print("clear :		efface votre page ")
+					print("historique :		affiche l'historique de vos commandes ")
+					print("whereis :		trouve un fichier (use : whereis nomfichier) ")
+					print("fin:		quitte et revient aux login")
+				elif l[0]=="clear":
+					print ("\033[H\033[2J")
+
+				elif l[0]=="historique":
+					print (historique)
+
+
+				elif l[0] == "fin" :
+					historique = " "
+					fin='1'
+					s.send(fin.encode())
+					break
+				else :
+					s.send(cmd.encode())
+					rep=s.recv(BUFFER_SIZE)
+					print (rep.decode())
 
 
 	elif decision=="admin":
