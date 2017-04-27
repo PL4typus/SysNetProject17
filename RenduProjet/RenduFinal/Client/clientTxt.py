@@ -345,7 +345,6 @@ while decision!= "exit":
 
 								clé=s.recv(64).decode()
 								if clé == "okCle" :
-									print(clé)
 
 									invalide=True
 									while invalide :
@@ -418,7 +417,7 @@ while decision!= "exit":
 
 								ok=s.recv(64).decode()
 								if ok=='okDelet':
-									print("Vous allez effacer l'utilisateur "+delet[1]+" de la blacklist")
+									print("Vous avez effacé l'utilisateur de la blacklist")
 									b='dansDelet'
 									s.send(a.encode())
 									a=s.recv(64).decode()
